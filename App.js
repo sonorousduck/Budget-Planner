@@ -1,14 +1,14 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView, StyleSheet, Text } from 'react-native';
 import { FirebaseProvider } from './src/hooks/Firebase';
+import HomePage from './src/views/HomePage'
 
 export default function App() {
   return (
     <FirebaseProvider>
-      <View style={styles.container}>
-        <Text>Open up App.js to start working on your app!</Text>
-        <StatusBar style="auto" />
-      </View>
+      <SafeAreaView style={styles.container}>
+        <HomePage/>
+      </SafeAreaView>
     </FirebaseProvider>
   );
 }

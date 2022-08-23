@@ -1,7 +1,8 @@
+import React from "react";
 import { initializeApp } from 'firebase/app';
 import { createContext, useContext, useMemo, useState } from 'react';
 
-const FirebaseContext = createContext(null)
+const FirebaseContext = createContext(null);
 
 // Optionally import the services that you want to use
 //import {...} from "firebase/auth";
@@ -39,7 +40,7 @@ const stuff = (() => {
 })()
 
 export const FirebaseProvider = ({children}) => {
-  const [firebase] = useState(stuff)
+  const [firebase] = useState(stuff);
 
   return (
     <FirebaseContext.Provider value={firebase}>
@@ -48,6 +49,6 @@ export const FirebaseProvider = ({children}) => {
   )
 }
 
-export const useFirebase = () => useContext(FirebaseContext)
+export const useFirebase = () => useContext(FirebaseContext);
 
-export default useFirebase
+export default useFirebase;
