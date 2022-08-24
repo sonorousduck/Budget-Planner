@@ -1,10 +1,10 @@
 import React from "react";
-import { View, StyleSheet, Text} from "react-native"
-import { SafeAreaInsetsContext, SafeAreaView } from "react-native-safe-area-context";
+import { View, Text, StyleSheet} from "react-native"
+import { SafeAreaView } from "react-native-safe-area-context";
 import useFirebase from "../hooks/Firebase"
 import { FloatingAction } from "react-native-floating-action";
 
-const HomePage = () => {
+const BudgetPage = () => {
     
     const firebase = useFirebase();
 
@@ -35,16 +35,17 @@ const HomePage = () => {
         }
       ];
 
-
     return (
         <SafeAreaView style={{flex: 1}} edges={['left', 'right', 'top']}>
-            <View style={styles.graphPortion}>
-                {/* This will be the budget graph */}
-            </View>
-            <View style={styles.otherPortion}>
-                
+            <View style={styles.circleBudget}>
+                <Text>Hello There!</Text>
 
             </View>
+
+            <View style={styles.tableBudget}>
+                <Text> General Kenobi </Text>
+            </View>
+
             <FloatingAction
                 actions={actions}
                 color="#638a7e"
@@ -56,14 +57,13 @@ const HomePage = () => {
 }
 
 const styles = StyleSheet.create({
-  graphPortion: {
-    flex: 3,
-    backgroundColor: "#2d2e2e"
-  },
-  otherPortion: {
-    flex: 4,
+    circleBudget: {
+      flex: 1,
+    },
+    tableBudget: {
+        flex: 3
+    }
+  });
+  
 
-  }
-});
-
-export default HomePage;
+export default BudgetPage;
