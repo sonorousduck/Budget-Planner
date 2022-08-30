@@ -5,6 +5,7 @@ import useFirebase from "../hooks/Firebase"
 import { FloatingAction } from "react-native-floating-action";
 import FAB from "../components/FAB";
 import TransactionDataTable from "../components/TransactionDataTable";
+import ExpenditureGraph from "../components/ExpenditureGraph";
 
 const HomePage = () => {
     
@@ -16,7 +17,7 @@ const HomePage = () => {
     return (
         <SafeAreaView style={{flex: 1}} edges={['left', 'right', 'top']}>
             <View style={styles.graphPortion}>
-                {/* This will be the budget graph */}
+                <ExpenditureGraph/>
             </View>
             <View style={styles.otherPortion}>
                 <TransactionDataTable />
