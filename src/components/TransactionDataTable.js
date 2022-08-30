@@ -2,13 +2,16 @@ import React, {useEffect, useState} from "react";
 import { ScrollView } from "react-native";
 import { DataTable } from 'react-native-paper';
 
-const optionsPerPage = [2, 3, 4];
+const optionsPerPage = [6, 4, 2];
 
 const TransactionDataTable = () => {
   const [page, setPage] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(optionsPerPage[0]);
   const [transactions, setTransactions] = useState([]);
+  const [numberOfPages, setNumberOfPages] = useState(0);
 
+  const from = page * itemsPerPage;
+  const to = Math.min((page + 1) * itemsPerPage, transactions.length);
 
   useEffect(() => {
     // This is where it will query the firebase database to grab all current transactions. For now, it will just set it up manually
@@ -29,12 +32,56 @@ const TransactionDataTable = () => {
     transaction1.expenditure = true
     tempTransactions.push(transaction1);
 
-    let transaction2 = {}
+    var transaction2 = {}
     transaction2.name = "Payday"
     transaction2.cost = 100.12
     transaction2.date = ""
     transaction2.expenditure = false
     tempTransactions.push(transaction2);
+
+    transaction2 = {}
+    transaction2.name = "Payday"
+    transaction2.cost = 100.12
+    transaction2.date = ""
+    transaction2.expenditure = false
+    tempTransactions.push(transaction2);
+
+    transaction2 = {}
+    transaction2.name = "Payday"
+    transaction2.cost = 100.12
+    transaction2.date = ""
+    transaction2.expenditure = false
+    tempTransactions.push(transaction2);
+
+    transaction2 = {}
+    transaction2.name = "Payday"
+    transaction2.cost = 100.12
+    transaction2.date = ""
+    transaction2.expenditure = false
+    tempTransactions.push(transaction2);
+
+    transaction2 = {}
+    transaction2.name = "Payday"
+    transaction2.cost = 100.12
+    transaction2.date = ""
+    transaction2.expenditure = false
+    tempTransactions.push(transaction2);
+
+    // transaction2 = {}
+    // transaction2.name = "Payday"
+    // transaction2.cost = 100.12
+    // transaction2.date = ""
+    // transaction2.expenditure = false
+    // tempTransactions.push(transaction2);
+
+    // transaction2 = {}
+    // transaction2.name = "Payday"
+    // transaction2.cost = 100.12
+    // transaction2.date = ""
+    // transaction2.expenditure = false
+    // tempTransactions.push(transaction2);
+
+    setNumberOfPages(Math.round(tempTransactions.length / itemsPerPage))
 
     setTransactions(tempTransactions);
   }, []);
@@ -54,7 +101,12 @@ const TransactionDataTable = () => {
       </DataTable.Header>
 
       {
-      transactions.map((transaction, index) => {
+
+      transactions.slice(
+        page * itemsPerPage,
+        page * itemsPerPage + itemsPerPage
+      )
+      .map((transaction, index) => {
             return (
               <DataTable.Row key={index} style={[!transaction.expenditure ? {backgroundColor: '#85bb65'} : {backgroundColor: '#bb4b4b'}, {marginBottom: 2, flexDirection:'row'}]}>
                 <DataTable.Cell textStyle={{fontSize: 18}} style={{paddingRight: 2, flex: 2}}>{transaction.name}</DataTable.Cell>
@@ -67,9 +119,9 @@ const TransactionDataTable = () => {
 
       <DataTable.Pagination
         page={page}
-        numberOfPages={3}
+        numberOfPages={Math.ceil(transactions.length / itemsPerPage)}
         onPageChange={(page) => setPage(page)}
-        label={"1-2 of 6"}
+        label={`${from + 1}-${to} of ${transactions.length}`}
         optionsPerPage={optionsPerPage}
         itemsPerPage={itemsPerPage}
         setItemsPerPage={setItemsPerPage}
