@@ -4,6 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import useFirebase from "../hooks/Firebase"
 import { FloatingAction } from "react-native-floating-action";
 import FAB from "../components/FAB";
+import TransactionDataTable from "../components/TransactionDataTable";
 
 const HomePage = () => {
     
@@ -18,9 +19,9 @@ const HomePage = () => {
                 {/* This will be the budget graph */}
             </View>
             <View style={styles.otherPortion}>
-            <FAB/>                
-
+                <TransactionDataTable />
             </View>
+            <FAB/>                
             
         </SafeAreaView>
     )
