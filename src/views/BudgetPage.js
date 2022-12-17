@@ -4,17 +4,31 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import useFirebase from "../hooks/Firebase"
 import { FloatingAction } from "react-native-floating-action";
 import FAB from "../components/FAB";
+import { Button } from "react-native-paper";
 
 const BudgetPage = () => {
     
     const firebase = useFirebase();
-
+    
     return (
         <SafeAreaView style={{flex: 1}} edges={['left', 'right', 'top']}>
             <View style={styles.circleBudget}>
                 <Text>Hello There!</Text>
 
             </View>
+            <Button onPress={firebase.readName}>
+                Get Name
+            </Button>
+
+            <Button onPress={() => {
+                
+                amount = 1.00;
+                date = new Date();
+                firebase.addTransaction(amount, date);
+            
+                }}>
+                Add transaction
+            </Button>
 
             <View style={styles.tableBudget}>
                 <Text> General Kenobi </Text>
