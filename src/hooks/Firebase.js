@@ -38,30 +38,25 @@ const firebaseFunctions = (() => {
   const database = getDatabase(app);
   const auth = getAuth();
   var uid = null;
+  var activeGroup = null;
 
-  onAuthStateChanged(auth, (user) => {
-    // TODO: Change this back to user instead of !user
-    if (!user) {
-      uid = "sonorousduck"
-      // uid = user.uid;
-    } else {
-      // User is signed out
-    }
-  })
-
-
+  
 
   return {
+   
     addItem: () => {
 
     },
-    addTransaction: (amount, date) => {
+    addTransaction: (amount, description, expense, date) => {
       const transactionUUID = uuidv4();
       console.log(date);
-      set(ref(database, 'users/' + uid + '/transactions/' + transactionUUID), {
+      set(ref(database, 'transactions/' + activeGroup + '/' + transactionUUID), {
         amount: amount,
         date: date.getTime(),
-        uuid: transactionUUID
+        description: description,
+        expense: expense,
+        uuid: transactionUUID,
+        timestamp: new Date().getTime()
       });
     },
     addIncome: (amount, date) => {

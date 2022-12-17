@@ -22,9 +22,11 @@ const BudgetPage = () => {
 
             <Button onPress={() => {
                 
-                amount = 1.00;
+                amount = 1.03;
                 date = new Date();
-                firebase.addTransaction(amount, date);
+                expense = true;
+                description = "Test description"
+                firebase.addTransaction(amount, description, expense, date);
             
                 }}>
                 Add transaction
