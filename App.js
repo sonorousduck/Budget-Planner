@@ -26,7 +26,7 @@ const Stack = createStackNavigator();
 
 
 export default function App() {
-  const [isSignedIn, setIsSignedIn ] = useState(currentUser != undefined);
+  const [isSignedIn, setIsSignedIn] = useState(currentUser != undefined);
   const firebase = useFirebase();
   
 
@@ -60,8 +60,12 @@ export default function App() {
             ) : (
               <>
               <Stack.Navigator>
-                <Stack.Screen name="Login" component={LoginPage} />
-                <Stack.Screen name="CreateAccount" component={CreateAccountPage} />
+                <Stack.Screen name="Login" component={LoginPage} options={{
+                  headerShown: false
+                }}/>
+                <Stack.Screen name="CreateAccount" component={CreateAccountPage} options={{
+                  headerShown: false
+                }}/>
               </Stack.Navigator>
               </>
             )}
