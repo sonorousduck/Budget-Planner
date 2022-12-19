@@ -5,7 +5,7 @@ import uuid from 'react-native-uuid';
 const FirebaseContext = createContext(null);
 
 // Optionally import the services that you want to use
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
 import { getDatabase, ref, onValue, set, update } from "firebase/database";
 import { uuidv4 } from "@firebase/util";
 //import {...} from "firebase/firestore";
@@ -36,13 +36,42 @@ const firebaseConfig = {
 const firebaseFunctions = (() => {
   const app = initializeApp(firebaseConfig);
   const database = getDatabase(app);
-  const auth = getAuth();
   var uid = null;
   var activeGroup = null;
-
+  const auth = getAuth();
+  let currentUser = auth.currentUser;
   
+  onAuthStateChanged(auth, (user) => {
+    console.log("SHOULD BE CALLED!")
+    if (user) {
+      // User is signed in, see docs for a list of available properties
+      // https://firebase.google.com/docs/reference/js/firebase.User
+      currentUser = user;
+      // ...
+    } else {
+      currentUser = undefined;
+      // User is signed out
+      // ...
+    }
+  });
 
   return {
+    
+    signIn: (email, password) => {
+      signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        // Signed in 
+        currentUser = userCredential.user;
+        console.log(user.email)
+
+        // ...
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+      });
+
+    },
    
     addItem: () => {
 

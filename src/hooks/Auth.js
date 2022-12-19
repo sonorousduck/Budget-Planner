@@ -3,6 +3,7 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 const auth = getAuth();
 let currentUser = auth.currentUser;
 onAuthStateChanged(auth, (user) => {
+  console.log("SHOULD BE CALLED!")
   if (user) {
     // User is signed in, see docs for a list of available properties
     // https://firebase.google.com/docs/reference/js/firebase.User
@@ -14,5 +15,6 @@ onAuthStateChanged(auth, (user) => {
     // ...
   }
 });
+
 
 export default currentUser;

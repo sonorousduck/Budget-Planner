@@ -18,6 +18,7 @@ import LoginPage from './src/views/LoginPage';
 import CreateAccountPage from './src/views/CreateAccountPage';
 import { useEffect, useState } from 'react';
 
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 
 const Tab = createBottomTabNavigator();
