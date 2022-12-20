@@ -27,8 +27,9 @@ const Stack = createStackNavigator();
 
 
 export default function App() {
-  const [isSignedIn, setIsSignedIn] = useState(currentUser != undefined);
-  const firebase = useFirebase();
+  // const [isSignedIn, setIsSignedIn] = useState(currentUser);
+  
+  
   
 
 

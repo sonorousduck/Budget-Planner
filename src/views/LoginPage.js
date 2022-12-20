@@ -10,7 +10,7 @@ const LoginPage = ({navigation}) => {
     const {height, width} = useWindowDimensions();
     const imageWidth = width / 2 + width / 16;
     const imageHeight = height / 4;
-    const firebase = useFirebase();
+    const { firebase, signedIn, setSignedIn } = useFirebase();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
@@ -49,6 +49,7 @@ const LoginPage = ({navigation}) => {
                     <View style={[styles.container, {alignSelf: 'center', width: '100%'}]}>
                         <Button mode="contained" onPress={() => {
                             Keyboard.dismiss();
+                            console.log("Sign in initiated")
                             firebase.signIn(email, password);
                             
                             }}>

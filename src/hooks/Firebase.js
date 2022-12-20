@@ -22,16 +22,6 @@ const firebaseConfig = {
   messagingSenderId: "613333563493",
   appId: "1:613333563493:web:71192ff042fc4f8142ee8c"
 };
-// const firebaseConfig = {
-//   apiKey: 'AIzaSyB9O76SPnwKagIQBcIq0QXR85ftQCj1xew',
-//   authDomain: "budget-tracker-c3df9.firebaseapp.com",
-//   databaseURL: 'https://budget-tracker.firebaseio.com',
-//   projectId: "budget-tracker-c3df9",
-//   storageBucket: "budget-tracker-c3df9.appspot.com",
-//   messagingSenderId: "613333563493",
-//   appId: "1:613333563493:web:71192ff042fc4f8142ee8c",
-//   measurementId: 'G-measurement-id',
-// };
 
 const firebaseFunctions = (() => {
   const app = initializeApp(firebaseConfig);
@@ -58,10 +48,13 @@ const firebaseFunctions = (() => {
   return {
     
     signIn: (email, password) => {
+      console.log("Sign in Called");
       signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed in 
+        console.log("Yeet")
         currentUser = userCredential.user;
+        setSignedIn(true);
         console.log(user.email)
 
         // ...
@@ -117,9 +110,16 @@ const firebaseFunctions = (() => {
 
 export const FirebaseProvider = ({children}) => {
   const [firebase] = useState(firebaseFunctions);
+  const [signedIn, setSignedIn] = useState(false)
+
+  state = {
+    firebase: firebase,
+    signedIn: signedIn,
+    setSignedIn: setSignedIn
+  }
 
   return (
-    <FirebaseContext.Provider value={firebase}>
+    <FirebaseContext.Provider value={state}>
       {children}
     </FirebaseContext.Provider>
   )

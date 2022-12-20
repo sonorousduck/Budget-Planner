@@ -10,7 +10,7 @@ const CreateAccountPage = ({navigation}) => {
     const {height, width} = useWindowDimensions();
     const imageWidth = width / 2;
     const imageHeight = height / 4;
-    const firebase = useFirebase();
+    const { firebase, signedIn, setSignedIn } = useFirebase();
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');

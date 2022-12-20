@@ -5,7 +5,7 @@ import useFirebase from "../hooks/Firebase"
 
 const SettingsPage = () => {
     
-    const firebase = useFirebase();
+    const { firebase, signedIn, setSignedIn } = useFirebase();
 
     return (
         <SafeAreaView>
