@@ -50,7 +50,7 @@ const LoginPage = ({navigation}) => {
                         <Button mode="contained" onPress={() => {
                             Keyboard.dismiss();
                             console.log("Sign in initiated")
-                            firebase.signIn(email, password);
+                            firebase.signIn(email, password, setSignedIn);
                             
                             }}>
                             Login

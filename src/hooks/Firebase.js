@@ -46,16 +46,21 @@ const firebaseFunctions = (() => {
   });
 
   return {
+
+    getCurrentUser: () => {
+      return currentUser;
+    },
     
-    signIn: (email, password) => {
+    signIn: (email, password, setSignedIn) => {
       console.log("Sign in Called");
       signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed in 
         console.log("Yeet")
         currentUser = userCredential.user;
+        console.log("Yeet 2")
         setSignedIn(true);
-        console.log(user.email)
+        console.log(userCredential.email)
 
         // ...
       })

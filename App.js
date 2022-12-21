@@ -2,7 +2,6 @@ import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView, StyleSheet, Text } from 'react-native';
 import { FirebaseProvider } from './src/hooks/Firebase';
 import useFirebase from './src/hooks/Firebase'
-import currentUser from './src/hooks/Auth'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -25,21 +24,16 @@ const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
 
-
-export default function App() {
-  // const [isSignedIn, setIsSignedIn] = useState(currentUser);
-  
-  
-  
-
+const NavContainer = () => {
+  const { firebase, signedIn, setSignedIn } = useFirebase();
+  useEffect(() => {
+    setSignedIn(firebase.getCurrentUser() == undefined)
+  })
 
   return (
-    <PaperProvider>
-      <SafeAreaProvider>
-        <FirebaseProvider>
-          <NavigationContainer>
+    <NavigationContainer>
 
-            {isSignedIn ? (
+            {signedIn ? (
               <>
             <StatusBar style='dark'/>
               <Tab.Navigator>
@@ -72,6 +66,20 @@ export default function App() {
               </>
             )}
           </NavigationContainer>
+  )
+}
+
+
+
+
+export default function App() {
+
+
+  return (
+    <PaperProvider>
+      <SafeAreaProvider>
+        <FirebaseProvider>
+          <NavContainer />
         </FirebaseProvider>
       </SafeAreaProvider>
     </PaperProvider>
