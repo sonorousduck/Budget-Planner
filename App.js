@@ -1,13 +1,12 @@
+import 'react-native-gesture-handler';
+
 import { StatusBar } from 'expo-status-bar';
-import { SafeAreaView, StyleSheet, Text } from 'react-native';
 import { FirebaseProvider } from './src/hooks/Firebase';
 import useFirebase from './src/hooks/Firebase'
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+// import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-
 import HomePage from './src/views/HomePage'
 import BudgetPage from './src/views/BudgetPage';
 import SettingsPage from './src/views/SettingsPage';
@@ -17,18 +16,25 @@ import LoginPage from './src/views/LoginPage';
 import CreateAccountPage from './src/views/CreateAccountPage';
 import { useEffect, useState } from 'react';
 
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { createDrawerNavigator } from '@react-navigation/drawer';
 
 
-const Tab = createBottomTabNavigator();
+import { getAuth } from "firebase/auth";
+
+
+// const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
+const Drawer = createDrawerNavigator();
 
+const auth = getAuth();
 
 const NavContainer = () => {
-  const { firebase, signedIn, setSignedIn } = useFirebase();
+  const { firebase, signedIn, setSignedIn, currentUser, setCurrentUser } = useFirebase();
+  
   useEffect(() => {
-    setSignedIn(firebase.getCurrentUser() == undefined)
+    setSignedIn(auth.currentUser)
   })
+
 
   return (
     <NavigationContainer>
@@ -36,22 +42,27 @@ const NavContainer = () => {
             {signedIn ? (
               <>
             <StatusBar style='dark'/>
-              <Tab.Navigator>
-                <Tab.Screen name="Home" component={HomePage} 
+              <Drawer.Navigator initialRouteName='Home'>
+                <Drawer.Screen name="Home" component={HomePage} 
                 options={{
                   title: 'Home',
                   headerShown: false,
-                  tabBarIcon: () => <AntDesign name="home" size={24} color="black" />}}/>
-                <Tab.Screen name="Budget" component={BudgetPage} 
+                  drawerLabel: "Home",
+                  drawerIcon: () => <AntDesign name="home" size={24} color="black" />}}
+                />
+                <Drawer.Screen name="Budget" component={BudgetPage} 
                   options={{
                     title: "Budget",
                     headerShown: false, 
-                    tabBarIcon: () => <FontAwesome5 name="money-bill-alt" size={24} color="black" />}} />
-                <Tab.Screen name="Settings" component={SettingsPage} options={{
+                    drawerIcon: () => <FontAwesome5 name="money-bill-alt" size={24} color="black" />}} 
+                  />
+                <Drawer.Screen name="Settings" component={SettingsPage} 
+                options={{
                     title: "Settings", 
                     headerShown: false,
-                    tabBarIcon: () => <Ionicons name="settings-outline" size={24} color="black" />}} />
-              </Tab.Navigator>
+                    drawerIcon: () => <Ionicons name="settings-outline" size={24} color="black" />}} 
+                />
+              </Drawer.Navigator>
               </>
             ) : (
               <>

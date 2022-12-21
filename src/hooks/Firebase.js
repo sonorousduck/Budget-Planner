@@ -1,11 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { initializeApp } from 'firebase/app';
 import { createContext, useContext, useMemo, useState } from 'react';
 import uuid from 'react-native-uuid';
 const FirebaseContext = createContext(null);
 
 // Optionally import the services that you want to use
-import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "firebase/auth";
 import { getDatabase, ref, onValue, set, update } from "firebase/database";
 import { uuidv4 } from "@firebase/util";
 //import {...} from "firebase/firestore";
@@ -30,45 +30,40 @@ const firebaseFunctions = (() => {
   var activeGroup = null;
   const auth = getAuth();
   let currentUser = auth.currentUser;
+
   
-  onAuthStateChanged(auth, (user) => {
-    console.log("SHOULD BE CALLED!")
-    if (user) {
-      // User is signed in, see docs for a list of available properties
-      // https://firebase.google.com/docs/reference/js/firebase.User
-      currentUser = user;
-      // ...
-    } else {
-      currentUser = undefined;
-      // User is signed out
-      // ...
-    }
-  });
 
   return {
+    
 
+    
     getCurrentUser: () => {
+      console.log(currentUser);
       return currentUser;
     },
     
     signIn: (email, password, setSignedIn) => {
-      console.log("Sign in Called");
       signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed in 
-        console.log("Yeet")
         currentUser = userCredential.user;
-        console.log("Yeet 2")
         setSignedIn(true);
-        console.log(userCredential.email)
-
-        // ...
       })
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
       });
 
+    },
+
+    signOut: (setSignedIn) => {
+      signOut(auth).then(() => {
+        setSignedIn(false);
+        console.log("Signing out")
+
+      }).catch((error) => {
+        console.log(error);
+      });
     },
    
     addItem: () => {
@@ -114,13 +109,26 @@ const firebaseFunctions = (() => {
 })()
 
 export const FirebaseProvider = ({children}) => {
-  const [firebase] = useState(firebaseFunctions);
   const [signedIn, setSignedIn] = useState(false)
+  const [currentUser, setCurrentUser ] = useState(null);
+  const [firebase] = useState(firebaseFunctions);
+  const auth = getAuth();
+
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      setCurrentUser(user)
+    } else {
+      setCurrentUser(null);
+    }
+  });
+
 
   state = {
     firebase: firebase,
     signedIn: signedIn,
-    setSignedIn: setSignedIn
+    setSignedIn: setSignedIn,
+    currentUser: currentUser,
+    setCurrentUser: setCurrentUser
   }
 
   return (

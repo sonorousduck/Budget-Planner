@@ -8,7 +8,7 @@ import { Button } from "react-native-paper";
 
 const BudgetPage = () => {
     
-    const { firebase, signedIn, setSignedIn } = useFirebase();
+    const { firebase, signedIn, setSignedIn, currentUser, setCurrentUser } = useFirebase();
     
     return (
         <SafeAreaView style={{flex: 1}} edges={['left', 'right', 'top']}>

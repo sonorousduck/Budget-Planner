@@ -9,7 +9,7 @@ import ExpenditureGraph from "../components/ExpenditureGraph";
 
 const HomePage = () => {
     
-    const { firebase, signedIn, setSignedIn } = useFirebase();
+    const { firebase, signedIn, setSignedIn, currentUser, setCurrentUser } = useFirebase();
 
     
 

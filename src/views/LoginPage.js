@@ -4,13 +4,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import useFirebase from "../hooks/Firebase"
 import { useState } from 'react';
 import { Button, TextInput } from  "react-native-paper"; 
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
 const LoginPage = ({navigation}) => {
     const {height, width} = useWindowDimensions();
     const imageWidth = width / 2 + width / 16;
     const imageHeight = height / 4;
-    const { firebase, signedIn, setSignedIn } = useFirebase();
+    const { firebase, signedIn, setSignedIn, currentUser, setCurrentUser } = useFirebase();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
@@ -37,6 +36,7 @@ const LoginPage = ({navigation}) => {
                         placeholder={"Password"}
                         style={[styles.input, {textAlignVertical: 'center'}]}
                         secureTextEntry={true}
+                        multiline={false}
                         left={<TextInput.Icon style={{alignSelf: 'center', paddingTop: 20}} icon="lock" />}
 
                     />
