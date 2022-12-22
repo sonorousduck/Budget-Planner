@@ -67,20 +67,6 @@ const TransactionDataTable = () => {
     transaction2.expenditure = false
     tempTransactions.push(transaction2);
 
-    // transaction2 = {}
-    // transaction2.name = "Payday"
-    // transaction2.cost = 100.12
-    // transaction2.date = ""
-    // transaction2.expenditure = false
-    // tempTransactions.push(transaction2);
-
-    // transaction2 = {}
-    // transaction2.name = "Payday"
-    // transaction2.cost = 100.12
-    // transaction2.date = ""
-    // transaction2.expenditure = false
-    // tempTransactions.push(transaction2);
-
     setNumberOfPages(Math.round(tempTransactions.length / itemsPerPage))
 
     setTransactions(tempTransactions);
