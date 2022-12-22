@@ -90,7 +90,6 @@ const CreateAccountPage = ({navigation}) => {
                                     const errorMessage = error.message;
                                 })
                             }
-                            console.log('TODO: Hook up with Firebase authentication')
                             }}>
                             Create Account
                         </Button>

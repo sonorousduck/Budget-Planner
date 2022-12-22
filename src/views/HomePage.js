@@ -15,7 +15,7 @@ import Transaction from "../components/Transaction";
 const HomePage = () => {
     
     const { firebase, signedIn, setSignedIn, currentUser, setCurrentUser } = useFirebase();
-
+    
     
 
 
@@ -32,7 +32,6 @@ const HomePage = () => {
                 <Text style={{color: 'white', fontSize: 16}}>December 2022</Text>
               </View>
                 <ScrollView>
-                  {/* <TransactionDataTable /> */}
                   <Transaction/>
                   <Transaction/>
                   <Transaction/>
