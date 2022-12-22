@@ -33,7 +33,7 @@ const NavContainer = () => {
   })
 
   useEffect(() => {
-    if (currentGroup){
+    if (currentGroup) {
       setCurrentTransactions(firebase.getCurrentMonthTransactions(currentGroup, setCurrentTransactions));
     }
   }, [currentGroup])
