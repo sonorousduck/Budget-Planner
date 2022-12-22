@@ -6,7 +6,7 @@ const FirebaseContext = createContext(null);
 
 // Optionally import the services that you want to use
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "firebase/auth";
-import { getDatabase, ref, onValue, set, update } from "firebase/database";
+import { getDatabase, ref, onValue, set, update, query, orderByChild } from "firebase/database";
 import { uuidv4 } from "@firebase/util";
 //import {...} from "firebase/firestore";
 //import {...} from "firebase/functions";
@@ -131,7 +131,7 @@ const firebaseFunctions = (() => {
         let currentMonth = date.getMonth() + 1;
         email = email.substring(0, email.indexOf('.'));
   
-        const transactionsRef = ref(database, 'transactions/' + email + '/' + date.getFullYear() + '/' + currentMonth);
+        const transactionsRef = query(ref(database, 'transactions/' + email + '/' + date.getFullYear() + '/' + currentMonth), orderByChild('-timestamp'));
         onValue(transactionsRef, (snapshot) => {
           const dataArray = [];
           snapshot.forEach((child) => {
