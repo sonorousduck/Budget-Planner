@@ -56,6 +56,37 @@ const firebaseFunctions = (() => {
 
     },
 
+    createUser: (name, email, password) => {
+      console.log("create user called")
+      createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+          currentUser = userCredential.user;
+          // Keep the @email because there isn't a way to check if they already exist better than this I think... 
+          // But you have to get rid of .com since . isn't allowed.
+          const uid = email.substring(0, email.indexOf('.'));
+          // Create the user in the database too
+          set(ref(database, 'users/' + uid), {
+            name: name,
+            email: email,
+            categories: {
+              Groceries: true,
+              Rent: true,
+            },
+            groups: {
+              default: true
+            }
+          })
+
+      })
+      .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          console.log(errorMessage);
+      })
+    },
+
+   
+
     signOut: (setSignedIn) => {
       signOut(auth).then(() => {
         setSignedIn(false);
