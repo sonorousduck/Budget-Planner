@@ -131,11 +131,11 @@ const firebaseFunctions = (() => {
         let currentMonth = date.getMonth() + 1;
         email = email.substring(0, email.indexOf('.'));
   
-        const transactionsRef = query(ref(database, 'transactions/' + email + '/' + date.getFullYear() + '/' + currentMonth), orderByChild('-timestamp'));
+        const transactionsRef = query(ref(database, 'transactions/' + email + '/' + date.getFullYear() + '/' + currentMonth), orderByChild('timestamp'));
         onValue(transactionsRef, (snapshot) => {
           const dataArray = [];
           snapshot.forEach((child) => {
-            dataArray.push(child.val())
+            dataArray.unshift(child.val())
           })
           setCurrentTransactions(dataArray);
         });

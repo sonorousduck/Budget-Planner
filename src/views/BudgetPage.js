@@ -25,8 +25,8 @@ const BudgetPage = () => {
                 amount = 1.03;
                 date = new Date();
                 expense = true;
-                description = "Test description",
-                optionalDetails = ""
+                description = "Newest";
+                optionalDetails = "";
                 firebase.addTransaction(amount, description, optionalDetails, expense, date, currentGroup);
                 }}>
                 Add transaction
