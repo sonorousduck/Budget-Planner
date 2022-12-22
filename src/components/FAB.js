@@ -21,7 +21,7 @@ const FAB = () => {
     return (
         <FloatingAction
                 actions={actions}
-                color="#638a7e"
+                color="#8b8b8b"
                 onPressItem={name => {
                     console.log(name);
                 }}/>
