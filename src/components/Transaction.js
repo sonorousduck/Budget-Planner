@@ -3,14 +3,26 @@ import { View, StyleSheet, Text, ScrollView} from "react-native"
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { Button } from "react-native-paper";
 
-const Transaction = () => {
+const Transaction = (props) => {
+    let color = "green";
+    let negative = "+";
+    if (props.props.expense)
+    {
+        color = "red";
+        negative = "-";
+    }
+    // const color = "red" ? props.props.expense : 'green';
+    // const negative = "-" ? props.props.expense : '+';
     return (
         <TouchableOpacity style={styles.overallCard} onPress={() => {
             console.log("Touched!")
+            console.log(color);
+            console.log(negative);
+
         }}>
-            <Text numberOfLines={1} style={{flex: 3, lineHeight: 32, alignItems: 'center', fontSize: 16}}>Transaction</Text>
-            <View style={{flex: 2, lineHeight: 32, alignItems: 'center'}}></View>
-            <Text numberOfLines={1} style={{lineHeight: 32, flex: 2, justifyContent: 'center', alignItems: 'center', fontSize: 16, color: 'red'}}>- $1700.31</Text>
+            <Text numberOfLines={1} style={{flex: 10, lineHeight: 32, alignItems: 'center', fontSize: 16}}>{props.props.description}</Text>
+            <View style={{flex: 1, lineHeight: 32, alignItems: 'center'}}></View>
+            <Text numberOfLines={1} style={{lineHeight: 32, flex: 4, justifyContent: 'center', alignItems: 'center', fontSize: 16, color: color}}>{negative} ${props.props.amount}</Text>
             <Button 
                 style={{lineHeight: 32, flex: 1}} 
                 labelStyle={{color: '#8b8b8b', fontSize: 24}} 

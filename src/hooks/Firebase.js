@@ -98,7 +98,7 @@ const firebaseFunctions = (() => {
     addItem: () => {
 
     },
-    addTransaction: (amount, description, expense, date, activeGroup) => {
+    addTransaction: (amount, description, optionalDetails, expense, date, activeGroup) => {
       const transactionUUID = uuidv4();
       activeGroup = activeGroup.email.substring(0, activeGroup.email.indexOf('.'));
 
@@ -108,6 +108,7 @@ const firebaseFunctions = (() => {
         amount: amount,
         date: date.getTime(),
         description: description,
+        optionalDetails: optionalDetails,
         expense: expense,
         uuid: transactionUUID,
         timestamp: new Date().getTime()
@@ -122,18 +123,23 @@ const firebaseFunctions = (() => {
       });
     },
 
-    getCurrentMonthTransactions: (activeGroup, setCurrentTransactions) => {
-      console.log(activeGroup.email);
-      let date = new Date();
-      let currentMonth = date.getMonth() + 1;
-      // activeGroup = activeGroup.email.substring(0, activeGroup.email.indexOf('.'));
-
-      // const transactionsRef = ref(database, 'transactions/' + activeGroup + '/' + date.getFullYear() + '/' + currentMonth);
-      // onValue(transactionsRef, (snapshot) => {
-      //   const data = snapshot.val();
-      //   setCurrentTransactions(data);
-      //   console.log(data)
-      // });
+    getCurrentMonthTransactions: (activeGroup, currentTransactions, setCurrentTransactions) => {
+      if (activeGroup.email)
+      {
+        let email = activeGroup.email;        
+        let date = new Date();
+        let currentMonth = date.getMonth() + 1;
+        email = email.substring(0, email.indexOf('.'));
+  
+        const transactionsRef = ref(database, 'transactions/' + email + '/' + date.getFullYear() + '/' + currentMonth);
+        onValue(transactionsRef, (snapshot) => {
+          const dataArray = [];
+          snapshot.forEach((child) => {
+            dataArray.push(child.val())
+          })
+          setCurrentTransactions(dataArray);
+        });
+      }
 
     },
 
@@ -142,7 +148,7 @@ const firebaseFunctions = (() => {
 
     },
 
-    removeItem: () => {
+    removerItem: () => {
 
     },
     updateItem: () => {
@@ -152,7 +158,8 @@ const firebaseFunctions = (() => {
       const testRef = ref(database, `/users/${uid}`);
       onValue(testRef, (snapshot) => {
         const data = snapshot.val();
-        console.log(data);
+        console.log("Still need to do something with: " + data);
+
       })
 
     },
@@ -180,7 +187,6 @@ export const FirebaseProvider = ({children}) => {
     if (currentUser) {
       setCurrentGroup(currentUser.email);
     }
-    console.log(currentGroup);
 
   }, [currentUser])
 

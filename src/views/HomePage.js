@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, StyleSheet, Text, ScrollView} from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context";
 import useFirebase from "../hooks/Firebase"
@@ -14,9 +14,15 @@ import Transaction from "../components/Transaction";
 
 const HomePage = () => {
     
-    const { firebase, signedIn, setSignedIn, currentUser, setCurrentUser, currentGroup, setCurrentGroup } = useFirebase();
-    // const transactions = firebase.
-    
+    const { firebase, signedIn, setSignedIn, currentUser, setCurrentUser, currentGroup, setCurrentGroup, currentTransactions, setCurrentTransactions } = useFirebase();
+    const [localCurrentTransactions, setLocalCurrentTransactions] = useState([])
+
+    useEffect(() => {
+      // firebase.getCurrentMonthTransactions(currentGroup, currentTransactions, setCurrentTransactions);
+      if (currentTransactions) {
+        setLocalCurrentTransactions(currentTransactions);
+      }
+    }, [currentTransactions])
 
 
     return (
@@ -32,16 +38,11 @@ const HomePage = () => {
                 <Text style={{color: 'white', fontSize: 16}}>December 2022</Text>
               </View>
                 <ScrollView>
-                  <Transaction/>
-                  <Transaction/>
-                  <Transaction/>
-                  <Transaction/>
-                  <Transaction/>
-                  <Transaction/>
-                  <Transaction/>
-                  <Transaction/>
-                  <Transaction/>
-
+                  {localCurrentTransactions.map((transaction, index) => (
+                        // <Transaction key={index} description={transaction.description} expense={transaction.expense} amount={transaction.amount}/>
+                        <Transaction key={index} props={transaction}/>
+                    ))
+                  }
                 </ScrollView>
 
             </View>

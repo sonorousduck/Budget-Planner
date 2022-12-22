@@ -27,7 +27,7 @@ const CreateAccountPage = ({navigation}) => {
 
     return (
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-        <SafeAreaView style={styles.centered} onPress={() => console.log("Safe Area Pressed")}>
+        <SafeAreaView style={styles.centered}>
                 <KeyboardAvoidingView
                     behavior={Platform.OS === "ios" ? "padding" : "height"}
                     style={[styles.container]}
