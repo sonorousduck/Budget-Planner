@@ -15,82 +15,83 @@ import { Provider as PaperProvider } from 'react-native-paper';
 import LoginPage from './src/views/LoginPage';
 import CreateAccountPage from './src/views/CreateAccountPage';
 import { useEffect, useState } from 'react';
-
-// import { createDrawerNavigator } from '@react-navigation/drawer';
-
-
 import { getAuth } from "firebase/auth";
 import ProjectsPage from './src/views/ProjectsPage';
 
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
-// const Drawer = createDrawerNavigator();
 
 const auth = getAuth();
 
 const NavContainer = () => {
-  const { firebase, signedIn, setSignedIn, currentUser, setCurrentUser } = useFirebase();
+  const { firebase, signedIn, setSignedIn, currentUser, setCurrentUser, currentGroup, setCurrentGroup, currentTransactions, setCurrentTransactions } = useFirebase();
   
   useEffect(() => {
     setSignedIn(auth.currentUser)
+    setCurrentGroup(auth.currentUser);
   })
+
+  useEffect(() => {
+    if (currentGroup){
+      setCurrentTransactions(firebase.getCurrentMonthTransactions(currentGroup, setCurrentTransactions));
+    }
+  }, [currentGroup])
 
 
   return (
     <NavigationContainer>
+      {signedIn ? (
+        <>
+      <StatusBar style='dark'/>
+        <Tab.Navigator initialRouteName='Home'>
+          <Tab.Screen name="Home" component={HomePage} 
+          options={{
+            title: 'Transactions',
+            headerShown: false,
+            tabBarIcon: () => <FontAwesome5 name="dollar-sign" size={20} color="black" />}}
+          />
+          <Tab.Screen name="Budget" component={BudgetPage} 
+            options={{
+              title: "Budget",
+              headerShown: false, 
+              tabBarIcon: () => <FontAwesome5 name="money-bill-alt" size={20} color="black" />}} 
+            />
 
-            {signedIn ? (
-              <>
-            <StatusBar style='dark'/>
-              <Tab.Navigator initialRouteName='Home'>
-                <Tab.Screen name="Home" component={HomePage} 
-                options={{
-                  title: 'Transactions',
-                  headerShown: false,
-                  tabBarIcon: () => <FontAwesome5 name="dollar-sign" size={20} color="black" />}}
-                />
-                <Tab.Screen name="Budget" component={BudgetPage} 
-                  options={{
-                    title: "Budget",
-                    headerShown: false, 
-                    tabBarIcon: () => <FontAwesome5 name="money-bill-alt" size={20} color="black" />}} 
-                  />
-
-                <Tab.Screen name="Projects" component={ProjectsPage} 
-                  options={{
-                    title: "Projects",
-                    headerShown: false, 
-                    tabBarIcon: () => <FontAwesome5 name="project-diagram" size={20} color="black" />}} 
-                  />
-                
-                <Tab.Screen name="Search" component={ProjectsPage} 
-                  options={{
-                    title: "Search",
-                    headerShown: false, 
-                    tabBarIcon: () => <FontAwesome5 name="search" size={20} color="black" />}} 
-                  />
-                <Tab.Screen name="Account" component={SettingsPage} 
-                options={{
-                    title: "Account", 
-                    headerShown: false,
-                    tabBarIcon: () => <Ionicons name="person" size={20} color="black" />}} 
-                />
-              </Tab.Navigator>
-              </>
-            ) : (
-              <>
-              <Stack.Navigator>
-                <Stack.Screen name="Login" component={LoginPage} options={{
-                  headerShown: false
-                }}/>
-                <Stack.Screen name="CreateAccount" component={CreateAccountPage} options={{
-                  headerShown: false
-                }}/>
-              </Stack.Navigator>
-              </>
-            )}
-          </NavigationContainer>
+          <Tab.Screen name="Projects" component={ProjectsPage} 
+            options={{
+              title: "Projects",
+              headerShown: false, 
+              tabBarIcon: () => <FontAwesome5 name="project-diagram" size={20} color="black" />}} 
+            />
+          
+          <Tab.Screen name="Search" component={ProjectsPage} 
+            options={{
+              title: "Search",
+              headerShown: false, 
+              tabBarIcon: () => <FontAwesome5 name="search" size={20} color="black" />}} 
+            />
+          <Tab.Screen name="Account" component={SettingsPage} 
+          options={{
+              title: "Account", 
+              headerShown: false,
+              tabBarIcon: () => <Ionicons name="person" size={20} color="black" />}} 
+          />
+        </Tab.Navigator>
+        </>
+      ) : (
+        <>
+        <Stack.Navigator>
+          <Stack.Screen name="Login" component={LoginPage} options={{
+            headerShown: false
+          }}/>
+          <Stack.Screen name="CreateAccount" component={CreateAccountPage} options={{
+            headerShown: false
+          }}/>
+        </Stack.Navigator>
+        </>
+      )}
+    </NavigationContainer>
   )
 }
 

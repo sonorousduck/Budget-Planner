@@ -14,8 +14,8 @@ import Transaction from "../components/Transaction";
 
 const HomePage = () => {
     
-    const { firebase, signedIn, setSignedIn, currentUser, setCurrentUser } = useFirebase();
-    
+    const { firebase, signedIn, setSignedIn, currentUser, setCurrentUser, currentGroup, setCurrentGroup } = useFirebase();
+    // const transactions = firebase.
     
 
 

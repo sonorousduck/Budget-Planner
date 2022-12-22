@@ -30,13 +30,11 @@ const firebaseFunctions = (() => {
   const auth = getAuth();
   let currentUser = auth.currentUser;
   var activeGroup = currentUser;
+  
 
   
 
   return {
-    
-
-    
     getCurrentUser: () => {
       return currentUser;
     },
@@ -100,10 +98,10 @@ const firebaseFunctions = (() => {
     addItem: () => {
 
     },
-    addTransaction: (amount, description, expense, date) => {
+    addTransaction: (amount, description, expense, date, activeGroup) => {
       const transactionUUID = uuidv4();
-      console.log(date);
-      console.log(date.getFullYear())
+      activeGroup = activeGroup.email.substring(0, activeGroup.email.indexOf('.'));
+
       let currentMonth = date.getMonth() + 1;
 
       set(ref(database, 'transactions/' + activeGroup + '/' + date.getFullYear() + '/' + currentMonth + '/' + transactionUUID), {
@@ -124,7 +122,23 @@ const firebaseFunctions = (() => {
       });
     },
 
-    getTransactions: () => {
+    getCurrentMonthTransactions: (activeGroup, setCurrentTransactions) => {
+      console.log(activeGroup.email);
+      let date = new Date();
+      let currentMonth = date.getMonth() + 1;
+      // activeGroup = activeGroup.email.substring(0, activeGroup.email.indexOf('.'));
+
+      // const transactionsRef = ref(database, 'transactions/' + activeGroup + '/' + date.getFullYear() + '/' + currentMonth);
+      // onValue(transactionsRef, (snapshot) => {
+      //   const data = snapshot.val();
+      //   setCurrentTransactions(data);
+      //   console.log(data)
+      // });
+
+    },
+
+    getTransactions: (year, month, activeGroup) => {
+      const transactionsRef = ref(database, '')
 
     },
 
@@ -135,7 +149,6 @@ const firebaseFunctions = (() => {
       
     },
     readName: () => {
-      console.log("yeet");
       const testRef = ref(database, `/users/${uid}`);
       onValue(testRef, (snapshot) => {
         const data = snapshot.val();
@@ -151,16 +164,25 @@ export const FirebaseProvider = ({children}) => {
   const [currentUser, setCurrentUser ] = useState(null);
   const [firebase] = useState(firebaseFunctions);
   const [currentGroup, setCurrentGroup] = useState(null);
+  const [currentTransactions, setCurrentTransactions] = useState([]);
   const auth = getAuth();
 
   onAuthStateChanged(auth, (user) => {
     if (user) {
       setCurrentUser(user)
-      setCurrentGroup(user)
+      // setCurrentGroup(user.email);
     } else {
       setCurrentUser(null);
     }
   });
+
+  useEffect(() => {
+    if (currentUser) {
+      setCurrentGroup(currentUser.email);
+    }
+    console.log(currentGroup);
+
+  }, [currentUser])
 
 
   state = {
@@ -170,7 +192,9 @@ export const FirebaseProvider = ({children}) => {
     currentUser: currentUser,
     setCurrentUser: setCurrentUser,
     currentGroup: currentGroup,
-    setCurrentGroup: setCurrentGroup
+    setCurrentGroup: setCurrentGroup,
+    currentTransactions: currentTransactions,
+    setCurrentTransactions, setCurrentTransactions
   }
 
   return (

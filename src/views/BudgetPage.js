@@ -8,7 +8,7 @@ import { Button } from "react-native-paper";
 
 const BudgetPage = () => {
     
-    const { firebase, signedIn, setSignedIn, currentUser, setCurrentUser } = useFirebase();
+    const { firebase, signedIn, setSignedIn, currentUser, setCurrentUser, currentGroup, setCurrentGroup } = useFirebase();
     
     return (
         <SafeAreaView style={{flex: 1}} edges={['left', 'right', 'top']}>
@@ -26,8 +26,7 @@ const BudgetPage = () => {
                 date = new Date();
                 expense = true;
                 description = "Test description"
-                firebase.addTransaction(amount, description, expense, date);
-            
+                firebase.addTransaction(amount, description, expense, date, currentGroup);
                 }}>
                 Add transaction
             </Button>
