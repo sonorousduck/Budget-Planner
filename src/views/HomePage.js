@@ -39,7 +39,6 @@ const HomePage = () => {
               </View>
                 <ScrollView>
                   {localCurrentTransactions.map((transaction, index) => (
-                        // <Transaction key={index} description={transaction.description} expense={transaction.expense} amount={transaction.amount}/>
                         <Transaction key={index} props={transaction}/>
                     ))
                   }
