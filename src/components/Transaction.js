@@ -11,6 +11,7 @@ const Transaction = (props) => {
 
     let color = "green";
     let negative = "+";
+    console.log(props)
     if (props.props.expense)
     {
         color = "red";

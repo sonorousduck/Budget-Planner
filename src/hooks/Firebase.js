@@ -6,7 +6,7 @@ const FirebaseContext = createContext(null);
 
 // Optionally import the services that you want to use
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "firebase/auth";
-import { getDatabase, ref, onValue, set, update, query, orderByChild } from "firebase/database";
+import { getDatabase, ref, onValue, set, update, query, orderByChild, remove } from "firebase/database";
 import { uuidv4 } from "@firebase/util";
 //import {...} from "firebase/firestore";
 //import {...} from "firebase/functions";
@@ -148,7 +148,18 @@ const firebaseFunctions = (() => {
 
     },
 
-    removerItem: () => {
+    deleteTransaction: (email, dateTransaction, uuid) => {
+      email = email.substring(0, email.indexOf('.'));
+      let date = new Date(dateTransaction);
+      let currentMonth = date.getMonth() + 1;
+      let year = date.getFullYear();
+      remove(ref(database, 'transactions/' + email + '/' + year + '/' + currentMonth + '/' + uuid))
+      // console.log(transactionRef)
+      // transactionRef.remove();
+      console.log("Deleted")
+    },
+
+    removeItem: () => {
 
     },
     updateItem: () => {

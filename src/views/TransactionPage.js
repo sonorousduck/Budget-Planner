@@ -1,6 +1,7 @@
-import React from "react";
-import { View, Text, StyleSheet} from "react-native"
-import { Button } from "react-native-paper";
+import React, { useRef, useState } from "react";
+import { View, Text, StyleSheet, Alert} from "react-native"
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { Button, TextInput } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import useFirebase from "../hooks/Firebase"
 
@@ -9,13 +10,43 @@ const TransactionPage = ({route, navigation}) => {
     
     const { firebase, signedIn, setSignedIn, currentUser, setCurrentUser } = useFirebase();
     const props = route.params.props.props;
-    const dateTime = new Date(props.date).toDateString()
+    const email = route.params.props.email;
+
+    const [isEditable, setIsEditable] = useState(false);
+    const [description, setDescription] = useState(props.description);
+    const [dateTime, setDateTime] = useState(new Date(props.date).toDateString())
+    const [category, setCategory] = useState(props.category)
+    const [optionalDetails, setOptionalDetails] = useState(props.optionalDetails)
+    const [expense, setExpense] = useState(props.expense); // This needs a radio button to appear to select
+
+    const costRef = useRef(null);
+
+
     let color = "green";
     let negative = "+";
     if (props.expense)
     {
         color = "red";
         negative = "-";
+    }
+
+    const showConfirmDialog = () => {
+      return Alert.alert(
+        "Are you sure?",
+        "Are you sure you want to delete this transaction?",
+        [
+          {
+            text: "Yes",
+            onPress: () => {
+              firebase.deleteTransaction(email, props.date, props.uuid);
+              navigation.goBack();
+            },
+          },
+          {
+            text: "No",
+          },
+        ]
+      )
     }
 
     return (
@@ -39,16 +70,33 @@ const TransactionPage = ({route, navigation}) => {
           <View style={styles.otherPortion}>
             <View style={styles.informationCard}>
               <View style={{flex: 6}}>
-                
-                <Text style={styles.title}>{props.description}</Text>
-                <Text style={styles.date}>{dateTime}</Text>
-                <Text style={[styles.cost, {color: color}]}>{negative}${props.amount}</Text>
+                <TouchableOpacity onPress={() => {console.log("Description Pressed")}}>
+                  <TextInput style={[styles.title, styles.editable]} editable={isEditable} value={description}/>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => {console.log("dateTime Pressed")}}>
+                  <TextInput style={[styles.date, styles.editable]} editable={isEditable} value={dateTime}/>
+
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={() => {
+                    console.log("cost Pressed")
+                    setIsEditable(true);
+                    costRef.current?.focus();
+                  }}>
+                  <TextInput style={[styles.cost, {color: color}, styles.editable]} editable={isEditable} value={negative + '$' + props.amount} ref={costRef}></TextInput>
+
+                </TouchableOpacity>
+
                 {props.optionalDetails != "" ? (
-                  <Text style={styles.additionalDetails}>{props.optionalDetails}</Text>
+                  <TouchableOpacity onPress={() => {
+                    console.log("optional details Pressed")
+                    setIsEditable(true);
+                    }}>
+                    <TextInput style={[styles.additionalDetails, styles.editable]} editable={isEditable} value={props.optionalDetails}/>
+                  </TouchableOpacity>
                 ) : (
                   <></>
                 )}
-                <Text style={styles.additionalDetails}>{props.optionalDetails}</Text>
               </View>
               <View style={{flexDirection: 'row', flex: 1, alignItems: 'center', justifyContent: 'center'}}>
                   <View style={{flex: 4}}/>
@@ -59,7 +107,7 @@ const TransactionPage = ({route, navigation}) => {
                     labelStyle={{color: '#ad4947', fontSize: 32, alignItems: 'center'}}
                     contentStyle={{alignContent: 'center'}}
                     onPress = {() => {
-                      console.log("Pop up delete confirmation window");
+                      showConfirmDialog();
                     }}
                     />
 
@@ -120,19 +168,22 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   title: {
-    alignSelf: 'center',
+    // alignSelf: 'center',
+    textAlign: 'center',
     marginTop: 8,
     fontSize: 24,
     fontWeight: 'bold'
   },
 
   date: {
-    alignSelf: 'center',
+    // alignSelf: 'center',
+    textAlign: 'center',
     marginTop: 8,
     fontSize: 16
   },
   cost: {
-    alignSelf: 'center',
+    // alignSelf: 'center',
+    textAlign: 'center',
     fontSize: 24,
     marginTop: 8
   },
@@ -140,6 +191,9 @@ const styles = StyleSheet.create({
 
   },
   category: {
+
+  },
+  editable: {
 
   },
 

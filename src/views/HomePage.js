@@ -47,7 +47,7 @@ const HomePage = ({navigation}) => {
               </View>
                 <ScrollView>
                   {localCurrentTransactions.map((transaction, index) => (
-                      <Transaction key={index} props={transaction}/>
+                      <Transaction key={index} props={transaction} email={currentGroup.email}/>
                   ))}
                 </ScrollView>
 
