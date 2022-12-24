@@ -12,10 +12,18 @@ import Transaction from "../components/Transaction";
 
 
 
-const HomePage = () => {
+const HomePage = ({navigation}) => {
     
     const { firebase, signedIn, setSignedIn, currentUser, setCurrentUser, currentGroup, setCurrentGroup, currentTransactions, setCurrentTransactions } = useFirebase();
     const [localCurrentTransactions, setLocalCurrentTransactions] = useState([])
+
+    useEffect(() => {
+      // firebase.getCurrentMonthTransactions(currentGroup, currentTransactions, setCurrentTransactions);
+      if (currentTransactions) {
+        setLocalCurrentTransactions(currentTransactions);
+      }
+    })
+
 
     useEffect(() => {
       // firebase.getCurrentMonthTransactions(currentGroup, currentTransactions, setCurrentTransactions);
@@ -39,14 +47,13 @@ const HomePage = () => {
               </View>
                 <ScrollView>
                   {localCurrentTransactions.map((transaction, index) => (
-                        <Transaction key={index} props={transaction}/>
-                    ))
-                  }
+                      <Transaction key={index} props={transaction}/>
+                  ))}
                 </ScrollView>
 
             </View>
             
-            <FAB/>                
+            <FAB/>
         </SafeAreaView>
     )
 }

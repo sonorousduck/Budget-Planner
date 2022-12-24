@@ -17,6 +17,7 @@ import CreateAccountPage from './src/views/CreateAccountPage';
 import { useEffect, useState } from 'react';
 import { getAuth } from "firebase/auth";
 import ProjectsPage from './src/views/ProjectsPage';
+import TransactionPage from './src/views/TransactionPage';
 
 
 const Tab = createBottomTabNavigator();
@@ -39,18 +40,28 @@ const NavContainer = () => {
   }, [currentGroup])
 
 
+  const Homestack = () => {
+    return (
+      <Stack.Navigator>
+        <Stack.Screen name="HomeScreen" component={HomePage} options={{headerShown: false}}/>
+        <Stack.Screen name="Transaction" component={TransactionPage} options={{headerShown: false}}/>
+      </Stack.Navigator>
+    )
+  }
+
+
   return (
     <NavigationContainer>
       {signedIn ? (
         <>
       <StatusBar style='dark'/>
         <Tab.Navigator initialRouteName='Home'>
-          <Tab.Screen name="Home" component={HomePage} 
-          options={{
-            title: 'Transactions',
-            headerShown: false,
-            tabBarIcon: () => <FontAwesome5 name="dollar-sign" size={20} color="black" />}}
-          />
+          <Tab.Screen name="Home" component={Homestack} 
+            options={{
+              title: 'Transactions',
+              headerShown: false,
+              tabBarIcon: () => <FontAwesome5 name="dollar-sign" size={20} color="black" />}}
+            />
           <Tab.Screen name="Budget" component={BudgetPage} 
             options={{
               title: "Budget",
@@ -78,6 +89,9 @@ const NavContainer = () => {
               tabBarIcon: () => <Ionicons name="person" size={20} color="black" />}} 
           />
         </Tab.Navigator>
+        {/* <Stack.Navigator>
+          <Stack.Screen name="Transaction" component={TransactionPage} options={{headerShown: false}} />
+        </Stack.Navigator> */}
         </>
       ) : (
         <>

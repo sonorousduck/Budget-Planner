@@ -2,8 +2,13 @@ import React, {useEffect, useState} from "react";
 import { View, StyleSheet, Text, ScrollView} from "react-native"
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { Button } from "react-native-paper";
+import { useNavigation } from '@react-navigation/native';
+
+
 
 const Transaction = (props) => {
+    const navigation = useNavigation();
+
     let color = "green";
     let negative = "+";
     if (props.props.expense)
@@ -16,8 +21,8 @@ const Transaction = (props) => {
     return (
         <TouchableOpacity style={styles.overallCard} onPress={() => {
             console.log("Touched!")
-            console.log(color);
-            console.log(negative);
+            navigation.navigate("Transaction", {props: props})
+            
 
         }}>
             <Text numberOfLines={1} style={{flex: 10, lineHeight: 32, alignItems: 'center', fontSize: 16}}>{props.props.description}</Text>
