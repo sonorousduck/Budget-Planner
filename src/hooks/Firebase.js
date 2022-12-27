@@ -136,7 +136,6 @@ const firebaseFunctions = (() => {
             dataArray.unshift(child.val())
           })
           setCurrentTransactions(dataArray);
-          // console.log(currentTransactions)
         });
       }
 
@@ -153,9 +152,6 @@ const firebaseFunctions = (() => {
       let currentMonth = date.getMonth() + 1;
       let year = date.getFullYear();
       remove(ref(database, 'transactions/' + email + '/' + year + '/' + currentMonth + '/' + uuid))
-      // console.log(transactionRef)
-      // transactionRef.remove();
-      console.log("Deleted")
     },
 
     updateTransaction: (description, expense, date, optionalDetails, timestamp, uuid) => {
