@@ -17,16 +17,30 @@ const HomePage = ({navigation}) => {
     const { firebase, signedIn, setSignedIn, currentUser, setCurrentUser, currentGroup, setCurrentGroup, currentTransactions, setCurrentTransactions } = useFirebase();
     const [localCurrentTransactions, setLocalCurrentTransactions] = useState([])
 
+    // useEffect(() => {
+    //   console.log("[] called")
+    //   // console.log(currentTransactions != undefined)
+    //   // console.log(currentGroup)
+    //   if (!currentTransactions) {
+    //     console.log("Running this: ")
+    //     console.log(`Email is NOT undefined ${currentGroup.email != undefined}`)
+    //     firebase.getCurrentMonthTransactions(currentGroup, currentTransactions, setCurrentTransactions);
+    //     console.log(currentTransactions != undefined)
+    //   }
+    //   if (currentTransactions) {
+    //     setLocalCurrentTransactions(currentTransactions);
+    //   }
+    // }, [])
+    
+
+
     useEffect(() => {
-      // firebase.getCurrentMonthTransactions(currentGroup, currentTransactions, setCurrentTransactions);
-      if (currentTransactions) {
-        setLocalCurrentTransactions(currentTransactions);
+      console.log(currentTransactions != undefined)
+      
+      if(!currentTransactions)
+      {
+        firebase.getCurrentMonthTransactions(currentGroup, currentTransactions, setCurrentTransactions);
       }
-    })
-
-
-    useEffect(() => {
-      // firebase.getCurrentMonthTransactions(currentGroup, currentTransactions, setCurrentTransactions);
       if (currentTransactions) {
         setLocalCurrentTransactions(currentTransactions);
       }

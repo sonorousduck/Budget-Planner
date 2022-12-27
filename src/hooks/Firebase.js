@@ -32,8 +32,6 @@ const firebaseFunctions = (() => {
   var activeGroup = currentUser;
   
 
-  
-
   return {
     getCurrentUser: () => {
       return currentUser;
@@ -138,6 +136,7 @@ const firebaseFunctions = (() => {
             dataArray.unshift(child.val())
           })
           setCurrentTransactions(dataArray);
+          // console.log(currentTransactions)
         });
       }
 
@@ -157,6 +156,20 @@ const firebaseFunctions = (() => {
       // console.log(transactionRef)
       // transactionRef.remove();
       console.log("Deleted")
+    },
+
+    updateTransaction: (description, expense, date, optionalDetails, timestamp, uuid) => {
+      const transaction = {
+        description: description,
+        expense: expense,
+        date: date,
+        optionalDetails: optionalDetails,
+        timestamp: timestamp,
+        uuid: uuid
+      }
+
+      update(ref(database, 'transactions/' + email + '/' + year + '/' + currentMonth + '/' + uuid), transaction)
+      console.log("Updated")
     },
 
     removeItem: () => {
@@ -200,6 +213,13 @@ export const FirebaseProvider = ({children}) => {
     }
 
   }, [currentUser])
+
+  useEffect(() => {
+    if (currentGroup) {
+      firebase.getCurrentMonthTransactions(currentGroup, currentTransactions, setCurrentTransactions)
+      console.log(currentTransactions)
+    }
+  }, [currentGroup])
 
 
   state = {
