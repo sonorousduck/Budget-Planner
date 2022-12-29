@@ -27,9 +27,18 @@ const HomePage = ({navigation}) => {
       }
     }, [currentTransactions])
 
+    useEffect(() => {
+      const unsubscribe = navigation.addListener("unfocus", () => {console.log("Testing")});
+  
+      
+  
+      return unsubscribe
+    }, [navigation])
+
+
 
     return (
-        <SafeAreaView style={{flex: 1}} edges={['left', 'right', 'top']}>
+        <SafeAreaView style={{flex: 1, height: '100%'}} edges={['left', 'right', 'top']}>
             <View style={styles.graphPortion}>
                 {/* <ExpenditureGraph/> */}
             </View>
@@ -40,11 +49,13 @@ const HomePage = ({navigation}) => {
               <View style={styles.monthIndicator}>
                 <Text style={{color: 'white', fontSize: 16}}>December 2022</Text>
               </View>
-                <ScrollView>
+              <View onStartShouldSetResponder={() => true}>
+                <ScrollView style={{height: '100%'}}>
                   {localCurrentTransactions.map((transaction, index) => (
                       <Transaction key={index} props={transaction} email={currentGroup.email}/>
                   ))}
                 </ScrollView>
+                </View>
 
             </View>
             

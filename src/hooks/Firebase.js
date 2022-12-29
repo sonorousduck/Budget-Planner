@@ -160,8 +160,6 @@ const firebaseFunctions = (() => {
       let currentMonth = incomingDate.getMonth() + 1;
       let year = incomingDate.getFullYear();
 
-      console.log(expense);
-
       const transaction = {
         description: description,
         amount: amount,
@@ -172,7 +170,6 @@ const firebaseFunctions = (() => {
       }
 
       update(ref(database, 'transactions/' + email + '/' + year + '/' + currentMonth + '/' + uuid), transaction)
-      console.log("Updated")
     },
 
     removeItem: () => {

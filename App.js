@@ -54,7 +54,7 @@ const NavContainer = () => {
     <NavigationContainer>
       {signedIn ? (
         <>
-      <StatusBar style='dark'/>
+      <StatusBar style='auto'/>
         <Tab.Navigator initialRouteName='Home'>
           <Tab.Screen name="Home" component={Homestack} 
             options={{
