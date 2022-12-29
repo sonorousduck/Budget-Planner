@@ -5,17 +5,19 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import useFirebase from "../hooks/Firebase"
 import CalendarPicker from 'react-native-calendar-picker';
 import { FontAwesome, Entypo } from '@expo/vector-icons';
+import DropDownPicker from 'react-native-dropdown-picker';
+import { color, exp } from "react-native-reanimated";
 
 const TransactionPage = ({ route, navigation }) => {
 
   const { firebase, signedIn, setSignedIn, currentUser, setCurrentUser } = useFirebase();
   const props = route.params.props.props;
   const email = route.params.props.email;
-
   const [isEditable, setIsEditable] = useState(false);
   const [description, setDescription] = useState(props.description);
   const [dateTime, setDateTime] = useState(new Date(props.date))
   const [dateTimePretty, setDateTimePretty] = useState(new Date(props.date).toDateString())
+  const [amount, setAmount] = useState(props.amount)
   const [category, setCategory] = useState(props.category)
   const [optionalDetails, setOptionalDetails] = useState(props.optionalDetails)
   const [expense, setExpense] = useState(props.expense); // This needs a radio button to appear to select
@@ -23,22 +25,15 @@ const TransactionPage = ({ route, navigation }) => {
   const [calendarSelected, setCalendarSelected] = useState(null);
   const costRef = useRef(null);
   const [showPlus, setShowPlus] = useState(true);
+  const [expenseOpen, setExpenseOpen] = useState(false);
+  const [negative, setNegative] = useState(props.expense ? "-" : "+");
+  const [color, setColor] = useState(props.expense ? "red" : "green");
+  const [symbols, setSymbols] = useState([{label: "+", value: "+"}, {label: "-", value: "-"}]);
 
   const todayDate = new Date();
   const minDate = new Date(new Date().setFullYear(todayDate.getFullYear() - 3))
   const maxDate = new Date(new Date().setFullYear(todayDate.getFullYear() + 3))
-
-
-  // useEffect(() => {
-  //   setDateTimePretty(dateTime.toDateString());
-  // }, [dateTime])
-
-  let color = "green";
-  let negative = "+";
-  if (props.expense) {
-    color = "red";
-    negative = "-";
-  }
+  const isFirstRender = useRef(true);
 
   const showConfirmDialog = () => {
     return Alert.alert(
@@ -59,11 +54,29 @@ const TransactionPage = ({ route, navigation }) => {
     )
   }
 
+  // const updateFirebase = () => {
+  //   console.log(expense)
+  //   firebase.updateTransaction(email, description, expense, amount, dateTime, optionalDetails, props.uuid);
+  // }
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    console.log(expense)
+    firebase.updateTransaction(email, description, expense, amount, dateTime, optionalDetails, props.uuid);
+  }, [description, expense, amount, dateTime, optionalDetails])
+
   return (
     <SafeAreaView style={{ flex: 1 }} edges={['left', 'right', 'top']}>
       <TouchableWithoutFeedback onPress={() => {
         Keyboard.dismiss();
         setShowPlus(true);
+        if (dateModalVisible) {
+          console.log("Pressed while visible")
+          setDateModalVisible(!dateModalVisible);
+        }
       }}>
         <View style={{ elevation: 1, backgroundColor: 'lightgrey', width: '97%', alignSelf: 'center', height: '100%', borderRadius: 8 }}>
 
@@ -97,7 +110,7 @@ const TransactionPage = ({ route, navigation }) => {
                       onPress={() => {
                         if (calendarSelected) {
                           let newDateTime = new Date(calendarSelected)
-                          setDateTime(newDateTime.getTime());
+                          setDateTime(newDateTime);
                           setDateTimePretty(newDateTime.toDateString())
                         }
                         setDateModalVisible(!dateModalVisible);
@@ -114,6 +127,7 @@ const TransactionPage = ({ route, navigation }) => {
                   onDateChange={(date) => {
                     setCalendarSelected(date)
                   }}
+                  initialDate={dateTime}
                 />
 
               </View>
@@ -156,6 +170,35 @@ const TransactionPage = ({ route, navigation }) => {
               </View>
             </TouchableOpacity>
 
+            <Text style={{ marginLeft: 16, marginTop: 16, fontSize: 16, fontWeight: 'bold' }}>Amount</Text>
+            <View style={{flexDirection: 'row', marginTop: 16, marginLeft: 16, backgroundColor: '#c0c0c0', borderRadius: 4, marginRight: 16}}>
+            <Button 
+              mode="text"
+              style={{marginTop: 4}}
+              labelStyle={{color: color, fontSize: 20}}
+              onPress={() => {
+                setNegative(negative == "-" ? expense : "+");
+                setColor(color == "red" ? expense : "green");
+                setExpense(!expense);
+              }}
+              >
+                {negative}
+            </Button>
+            <View style={{width: 1, backgroundColor: '#909090', marginRight: 8, alignItems: 'center'}}/>
+            <Text style={{fontSize: 24, color: color, justifyContent: 'center', alignContent: 'center', lineHeight: 39}}>
+              $
+            </Text>
+            <TextInput
+              style={[styles.input, {color: color}]}
+              multiline={true}
+              value={"" + amount}
+              onChangeText={
+                (amount) => setAmount(amount)
+              }
+              keyboardType="numeric"
+              ></TextInput>
+            </View> 
+
 
             <Text style={{ marginLeft: 16, marginTop: 16, fontSize: 16, fontWeight: 'bold' }}>Optional Details</Text>
             {optionalDetails != "" ?
@@ -180,6 +223,7 @@ const TransactionPage = ({ route, navigation }) => {
                   }
 
                   <TextInput
+                    style={{marginLeft: 8}}
                     placeholder="Optional Details"
                     onFocus={() => {
                       setShowPlus(false);
@@ -195,7 +239,7 @@ const TransactionPage = ({ route, navigation }) => {
           </View>
 
 
-          <View style={{ flexDirection: 'row', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+          {/* <View style={{ flexDirection: 'row', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
             <Button
               mode='text'
               icon="content-save"
@@ -206,9 +250,7 @@ const TransactionPage = ({ route, navigation }) => {
                 setIsEditable(true)
               }}
             ><Text style={{ fontSize: 16 }}>Save Changes</Text></Button>
-
-
-          </View>
+          </View> */}
         </View>
 
         {/* <View style={{flex: 6}}>
@@ -323,12 +365,15 @@ const styles = StyleSheet.create({
   editable: {
 
   },
+  input: {
+    flex: 3,
+    fontSize: 24,
+  },
 
   centeredView: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+    justifyContent: 'flex-end',
+    },
 
   modalView: {
     margin: 2,
@@ -344,6 +389,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
+    paddingBottom: 64
   },
 
 });

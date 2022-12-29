@@ -154,13 +154,20 @@ const firebaseFunctions = (() => {
       remove(ref(database, 'transactions/' + email + '/' + year + '/' + currentMonth + '/' + uuid))
     },
 
-    updateTransaction: (description, expense, date, optionalDetails, timestamp, uuid) => {
+    updateTransaction: (email, description, expense, amount, date, optionalDetails, uuid) => {
+      email = email.substring(0, email.indexOf('.'));
+      let incomingDate = new Date(date);
+      let currentMonth = incomingDate.getMonth() + 1;
+      let year = incomingDate.getFullYear();
+
+      console.log(expense);
+
       const transaction = {
         description: description,
+        amount: amount,
         expense: expense,
         date: date,
         optionalDetails: optionalDetails,
-        timestamp: timestamp,
         uuid: uuid
       }
 

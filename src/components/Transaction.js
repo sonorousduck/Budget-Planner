@@ -21,7 +21,6 @@ const Transaction = (props) => {
     // const negative = "-" ? props.props.expense : '+';
     return (
         <TouchableOpacity style={styles.overallCard} onPress={() => {
-            console.log("Touched!")
             navigation.navigate("Transaction", {props: props})
             
 
