@@ -1,13 +1,13 @@
 import React from "react";
 import { FloatingAction } from "react-native-floating-action";
-
+import { useNavigation } from "@react-navigation/native";
 
 const FAB = () => {
     const actions = [
         {
           text: "Create New Transaction",
           icon: require("../../assets/favicon.png"),
-          name: "bt_new_transaction",
+          name: "CreateNewTransaction",
           position: 1
         },
         {
@@ -17,13 +17,17 @@ const FAB = () => {
           position: 2
         },
       ];
-    
+    const navigation = useNavigation();
+
     return (
         <FloatingAction
                 actions={actions}
                 color="#8b8b8b"
                 onPressItem={name => {
-                    console.log(name);
+                  if (name == "CreateNewTransaction")
+                  {
+                    navigation.navigate("CreateNewTransaction")
+                  }
                 }}/>
     );
 }

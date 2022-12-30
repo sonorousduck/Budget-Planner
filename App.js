@@ -18,6 +18,7 @@ import { useEffect, useState } from 'react';
 import { getAuth } from "firebase/auth";
 import ProjectsPage from './src/views/ProjectsPage';
 import TransactionPage from './src/views/TransactionPage';
+import CreateNewTransactionPage from './src/views/CreateNewTransactionPage';
 
 
 const Tab = createBottomTabNavigator();
@@ -42,9 +43,10 @@ const NavContainer = () => {
 
   const Homestack = () => {
     return (
-      <Stack.Navigator>
+      <Stack.Navigator initialRouteName='HomeScreen'>
         <Stack.Screen name="HomeScreen" component={HomePage} options={{headerShown: false}}/>
         <Stack.Screen name="Transaction" component={TransactionPage} options={{headerShown: false}}/>
+        <Stack.Screen name="CreateNewTransaction" component={CreateNewTransactionPage} options={{headerShown: false}}/>
       </Stack.Navigator>
     )
   }
@@ -95,7 +97,7 @@ const NavContainer = () => {
         </>
       ) : (
         <>
-        <Stack.Navigator>
+        <Stack.Navigator initialRouteName='Login'>
           <Stack.Screen name="Login" component={LoginPage} options={{
             headerShown: false
           }}/>

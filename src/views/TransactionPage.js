@@ -98,17 +98,15 @@ const TransactionPage = ({ route, navigation }) => {
 
   }, [expense])
 
-
+  const goBack = () => {
+    navigation.goBack();
+  }
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={['left', 'right', 'top']}>
       <TouchableWithoutFeedback onPress={() => {
         Keyboard.dismiss();
         setShowPlus(true);
-        if (dateModalVisible) {
-          console.log("Pressed while visible")
-          setDateModalVisible(!dateModalVisible);
-        }
       }}>
         <View style={{ elevation: 1, backgroundColor: 'lightgrey', width: '97%', alignSelf: 'center', height: '100%', borderRadius: 8, justifyContent: 'flex-end'}}>
           <Modal
@@ -173,7 +171,7 @@ const TransactionPage = ({ route, navigation }) => {
               icon="chevron-left"
               mode='text'
               onPress={() => {
-                navigation.goBack();
+                goBack();
               }}
             ><Text style={{ fontSize: 16 }}>Back</Text></Button>
             <View style={{ flex: 4 }} />

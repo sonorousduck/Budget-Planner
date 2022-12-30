@@ -49,13 +49,11 @@ const HomePage = ({navigation}) => {
               <View style={styles.monthIndicator}>
                 <Text style={{color: 'white', fontSize: 16}}>December 2022</Text>
               </View>
-              <View onStartShouldSetResponder={() => true}>
-                <ScrollView style={{height: '100%'}}>
-                  {localCurrentTransactions.map((transaction, index) => (
-                      <Transaction key={index} props={transaction} email={currentGroup.email}/>
-                  ))}
-                </ScrollView>
-                </View>
+              <ScrollView style={{height: '100%'}}>
+                {localCurrentTransactions.map((transaction, index) => (
+                    <Transaction key={index} props={transaction} email={currentGroup.email}/>
+                ))}
+              </ScrollView>
 
             </View>
             
