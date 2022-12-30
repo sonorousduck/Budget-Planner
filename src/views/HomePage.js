@@ -6,8 +6,6 @@ import { FloatingAction } from "react-native-floating-action";
 import FAB from "../components/FAB";
 import TransactionDataTable from "../components/TransactionDataTable";
 import ExpenditureGraph from "../components/ExpenditureGraph";
-// import WavyBackground from "react-native-wavy-background"; // Uninstall this
-import { LinearGradient } from 'expo-linear-gradient';
 import Transaction from "../components/Transaction";
 
 
@@ -49,11 +47,11 @@ const HomePage = ({navigation}) => {
               <View style={styles.monthIndicator}>
                 <Text style={{color: 'white', fontSize: 16}}>December 2022</Text>
               </View>
-              <ScrollView style={{height: '100%'}}>
-                {localCurrentTransactions.map((transaction, index) => (
-                    <Transaction key={index} props={transaction} email={currentGroup.email}/>
-                ))}
-              </ScrollView>
+                <ScrollView style={{height: '100%'}}>
+                  {localCurrentTransactions.map((transaction, index) => (
+                      <Transaction key={index} props={transaction} email={currentGroup.email}/>
+                  ))}
+                </ScrollView>
 
             </View>
             

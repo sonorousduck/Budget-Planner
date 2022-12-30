@@ -5,8 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import useFirebase from "../hooks/Firebase"
 import CalendarPicker from 'react-native-calendar-picker';
 import { FontAwesome, Entypo } from '@expo/vector-icons';
-import DropDownPicker from 'react-native-dropdown-picker';
-import { color, exp } from "react-native-reanimated";
+// import DropDownPicker from 'react-native-dropdown-picker'; Todo: Uninstall this if I don't use it for categories
 import { useIsFocused } from "@react-navigation/native";
 
 
@@ -53,6 +52,12 @@ const TransactionPage = ({ route, navigation }) => {
       ]
     )
   }
+  useEffect(() => {
+    navigation.addListener('beforeRemove', (e) => {
+      console.log('Removing')
+     
+    })
+  })
 
   // const updateFirebase = () => {
   //   console.log(expense)
@@ -69,6 +74,7 @@ const TransactionPage = ({ route, navigation }) => {
       console.log("called when screen close"); 
       firebase.updateTransaction(email, description, expense, amount, dateTime, optionalDetails, props.uuid);
     }
+    
 
 }, [isVisible]);
     

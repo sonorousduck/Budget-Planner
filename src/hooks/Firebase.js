@@ -75,6 +75,9 @@ const firebaseFunctions = (() => {
             },
             groups: {
               default: true
+            },
+            currentGroup: {
+              default: true,
             }
           })
 
