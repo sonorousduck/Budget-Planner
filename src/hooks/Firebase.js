@@ -1,5 +1,7 @@
 import React, { useEffect } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { initializeApp } from 'firebase/app';
+import { initializeAuth, getReactNativePersistence } from "firebase/auth";
 import { createContext, useContext, useMemo, useState } from 'react';
 import uuid from 'react-native-uuid';
 const FirebaseContext = createContext(null);
@@ -27,7 +29,10 @@ const firebaseFunctions = (() => {
   const app = initializeApp(firebaseConfig);
   const database = getDatabase(app);
   var uid = null;
-  const auth = getAuth();
+  // const auth = getAuth();
+  const auth = initializeAuth(app, {
+    persistence: getReactNativePersistence(AsyncStorage)
+  })
   let currentUser = auth.currentUser;
   var activeGroup = currentUser;
   
