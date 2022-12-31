@@ -14,6 +14,7 @@ const TransactionPage = ({ route, navigation }) => {
 
   const { firebase, signedIn, setSignedIn, currentUser, setCurrentUser } = useFirebase();
   const props = route.params.props.props;
+  console.log(route)
   const email = route.params.props.email;
   const [description, setDescription] = useState(props.description);
   const [dateTime, setDateTime] = useState(new Date(props.date))
@@ -52,12 +53,6 @@ const TransactionPage = ({ route, navigation }) => {
       ]
     )
   }
-  useEffect(() => {
-    navigation.addListener('beforeRemove', (e) => {
-      console.log('Removing')
-     
-    })
-  })
 
   // const updateFirebase = () => {
   //   console.log(expense)

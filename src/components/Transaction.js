@@ -22,8 +22,6 @@ const Transaction = (props) => {
     return (
         <TouchableOpacity style={styles.overallCard} onPress={() => {
             navigation.navigate("Transaction", {props: props})
-            
-
         }}>
             <Text numberOfLines={1} style={{flex: 10, lineHeight: 32, alignItems: 'center', fontSize: 16}}>{props.props.description}</Text>
             <View style={{flex: 1, lineHeight: 32, alignItems: 'center'}}></View>

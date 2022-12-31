@@ -15,23 +15,16 @@ const HomePage = ({navigation}) => {
     const { firebase, signedIn, setSignedIn, currentUser, setCurrentUser, currentGroup, setCurrentGroup, currentTransactions, setCurrentTransactions } = useFirebase();
     const [localCurrentTransactions, setLocalCurrentTransactions] = useState([])
 
-    useEffect(() => {    
+    useEffect(() => {
       if(!currentTransactions)
       {
+        console.log("YEEEET:" + currentGroup);
         firebase.getCurrentMonthTransactions(currentGroup, currentTransactions, setCurrentTransactions);
       }
-      if (currentTransactions) {
+      if (currentTransactions && currentTransactions.length) {
         setLocalCurrentTransactions(currentTransactions);
       }
     }, [currentTransactions])
-
-    useEffect(() => {
-      const unsubscribe = navigation.addListener("unfocus", () => {console.log("Testing")});
-  
-      
-  
-      return unsubscribe
-    }, [navigation])
 
 
 
@@ -49,7 +42,7 @@ const HomePage = ({navigation}) => {
               </View>
                 <ScrollView style={{height: '100%'}}>
                   {localCurrentTransactions.map((transaction, index) => (
-                      <Transaction key={index} props={transaction} email={currentGroup.email}/>
+                      <Transaction key={index} props={transaction} email={currentGroup}/>
                   ))}
                 </ScrollView>
 

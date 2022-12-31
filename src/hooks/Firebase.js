@@ -106,7 +106,7 @@ const firebaseFunctions = (() => {
     },
     addTransaction: (amount, description, optionalDetails, expense, date, activeGroup) => {
       const transactionUUID = uuidv4();
-      activeGroup = activeGroup.email.substring(0, activeGroup.email.indexOf('.'));
+      // activeGroup = activeGroup.email.substring(0, activeGroup.email.indexOf('.'));
 
       let currentMonth = date.getMonth() + 1;
 
@@ -129,14 +129,32 @@ const firebaseFunctions = (() => {
       });
     },
 
+    getActiveGroup: (currentUser, setCurrentGroup) => {
+      let email = currentUser.email;
+      email = email.substring(0, email.indexOf('.'));
+      const activeGroupRef = query(ref(database, "users/" + email + "/" + 'currentGroup'))
+      onValue(activeGroupRef, (snapshot) => {
+        snapshot.forEach((child) => {
+          if (child.key == 'default') {
+            setCurrentGroup(email);
+          } else {
+            setCurrentGroup(child.key)
+          }
+        })
+      })
+    },
+
     getCurrentMonthTransactions: (activeGroup, currentTransactions, setCurrentTransactions) => {
-      if (activeGroup.email)
+      if (activeGroup)
       {
-        let email = activeGroup.email;        
+        let email = activeGroup; 
         let date = new Date();
         let currentMonth = date.getMonth() + 1;
-        email = email.substring(0, email.indexOf('.'));
-  
+        if (email.includes('.')) {
+          email = email.substring(0, email.indexOf('.'));
+        }
+        console.log("email from month transactions: ", email)
+
         const transactionsRef = query(ref(database, 'transactions/' + email + '/' + date.getFullYear() + '/' + currentMonth), orderByChild('timestamp'));
         onValue(transactionsRef, (snapshot) => {
           const dataArray = [];
@@ -163,7 +181,7 @@ const firebaseFunctions = (() => {
     },
 
     updateTransaction: (email, description, expense, amount, date, optionalDetails, uuid) => {
-      email = email.substring(0, email.indexOf('.'));
+      // email = email.substring(0, email.indexOf('.'));
       let incomingDate = new Date(date);
       let currentMonth = incomingDate.getMonth() + 1;
       let year = incomingDate.getFullYear();
@@ -195,6 +213,32 @@ const firebaseFunctions = (() => {
       })
 
     },
+
+
+
+    setActiveGroup: (newGroup, setCurrentGroup) => {
+      let email = currentUser.email;
+      email = email.substring(0, email.indexOf('.'));
+      
+      // let currentActiveGroup = null;
+
+      // const activeGroupRef = query(ref(database, "users/" + email + "/" + 'activeGroup'))
+      // onValue(activeGroupRef, (snapshot) => {
+      //   snapshot.forEach((child) => {
+      //     console.log(child.key());
+      //     currentActiveGroup = child.key();
+      //   })
+      // })
+
+      const groupUpdate = {
+        activeGroup: {
+          newGroup: true
+        }
+      }
+
+      update(ref(database, `users/${email}`), groupUpdate)
+      setCurrentGroup(newGroup);
+    }
   }
 })()
 

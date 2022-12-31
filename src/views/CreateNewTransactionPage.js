@@ -7,6 +7,7 @@ import CalendarPicker from 'react-native-calendar-picker';
 import { FontAwesome, Entypo } from '@expo/vector-icons';
 // import DropDownPicker from 'react-native-dropdown-picker'; Todo: Uninstall this if I don't use it for categories
 import { useIsFocused } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 
 const CreateNewTransactionPage = () => {
 
@@ -17,7 +18,7 @@ const CreateNewTransactionPage = () => {
     const [amount, setAmount] = useState(0.00)
     const [category, setCategory] = useState(null)
     const [optionalDetails, setOptionalDetails] = useState("")
-    const [expense, setExpense] = useState(false);
+    const [expense, setExpense] = useState(true);
     const [dateModalVisible, setDateModalVisible] = useState(false);
     const [calendarSelected, setCalendarSelected] = useState(null);
     const [showPlus, setShowPlus] = useState(true);
@@ -25,21 +26,8 @@ const CreateNewTransactionPage = () => {
     const [color, setColor] = useState("red");
     const isVisible = useIsFocused();
     const [changed, setChanged] = useState(false);
-
-
+    const navigation = useNavigation();
     const isFirstRender = useRef(true);
-
-
-// TODO: Offer a alert screen instead
-    // useEffect(() => {
-    //     if (isFirstRender.current) {
-    //         return;
-    //     }
-    //     if (changed) {
-    //         firebase.addTransaction(amount, description, optionalDetails, expense, dateTime, currentGroup);
-    //     }
-
-    // }, [isVisible]);
 
 
     useEffect(() => {
@@ -47,7 +35,6 @@ const CreateNewTransactionPage = () => {
             return;
         }
         if (!changed) {
-            console.log("Something was updated!")
             setChanged(true);
         }
     }, [description, amount, dateTime, optionalDetails, category])
@@ -70,6 +57,16 @@ const CreateNewTransactionPage = () => {
     const goBack = () => {
         navigation.goBack();
     }
+
+    addTransaction = () => {
+        if (amount == 0.0 || description == "") {
+            console.log("TODO: Incomplete Error Returning! Return a message to the user")
+            return;
+        } 
+        firebase.addTransaction(amount, description, optionalDetails, expense, dateTime, currentGroup)
+        goBack();
+    }
+
 
 
     return (
@@ -162,7 +159,6 @@ const CreateNewTransactionPage = () => {
                                 style={{ marginTop: 4 }}
                                 labelStyle={{ color: color, fontSize: 16, lineHeight: 18 }}
                                 onPress={() => {
-                                    console.log(`Expense Before: ${expense}`)
                                     setExpense(!expense);
                                 }}
                             >
@@ -228,7 +224,7 @@ const CreateNewTransactionPage = () => {
                             mode="contained"
                             style={styles.saveButton}
                             onPress={() => {
-                                console.log("Saving")
+                                addTransaction();
                             }}
                             icon="content-save"
                             >Save Transaction</Button>

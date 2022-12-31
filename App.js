@@ -10,7 +10,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import HomePage from './src/views/HomePage'
 import BudgetPage from './src/views/BudgetPage';
 import SettingsPage from './src/views/SettingsPage';
-import { AntDesign, FontAwesome5, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons'; 
+import { FontAwesome5, Ionicons } from '@expo/vector-icons'; 
 import { Provider as PaperProvider } from 'react-native-paper';
 import LoginPage from './src/views/LoginPage';
 import CreateAccountPage from './src/views/CreateAccountPage';
@@ -31,8 +31,18 @@ const NavContainer = () => {
   
   useEffect(() => {
     setSignedIn(auth.currentUser)
-    setCurrentGroup(auth.currentUser);
+    // let user = auth.currentUser
+    // firebase.getActiveGroup(user);
   })
+
+  useEffect(() => {
+    if (!auth.currentUser) {
+      return;
+    }
+
+    firebase.getActiveGroup(auth.currentUser, setCurrentGroup);
+
+  }, [signedIn])
 
   useEffect(() => {
     if (currentGroup) {
