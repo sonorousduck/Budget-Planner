@@ -19,6 +19,7 @@ import { getAuth } from "firebase/auth";
 import ProjectsPage from './src/views/ProjectsPage';
 import TransactionPage from './src/views/TransactionPage';
 import CreateNewTransactionPage from './src/views/CreateNewTransactionPage';
+import AccountPage from './src/views/AccountPage';
 
 
 const Tab = createBottomTabNavigator();
@@ -46,7 +47,7 @@ const NavContainer = () => {
 
   useEffect(() => {
     if (currentGroup) {
-      setCurrentTransactions(firebase.getCurrentMonthTransactions(currentGroup, currentTransactions, setCurrentTransactions));
+      setCurrentTransactions(firebase.getCurrentMonthTransactions(currentGroup, currentTransactions, setCurrentTransactions, currentUser));
     }
   }, [currentGroup])
 
@@ -94,7 +95,7 @@ const NavContainer = () => {
               headerShown: false, 
               tabBarIcon: () => <FontAwesome5 name="search" size={20} color="black" />}} 
             />
-          <Tab.Screen name="Account" component={SettingsPage} 
+          <Tab.Screen name="Account" component={AccountPage} 
           options={{
               title: "Account", 
               headerShown: false,

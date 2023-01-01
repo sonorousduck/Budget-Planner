@@ -28,8 +28,6 @@ const firebaseConfig = {
 const firebaseFunctions = (() => {
   const app = initializeApp(firebaseConfig);
   const database = getDatabase(app);
-  var uid = null;
-  // const auth = getAuth();
   const auth = initializeAuth(app, {
     persistence: getReactNativePersistence(AsyncStorage)
   })
@@ -144,10 +142,33 @@ const firebaseFunctions = (() => {
       })
     },
 
-    getCurrentMonthTransactions: (activeGroup, currentTransactions, setCurrentTransactions) => {
+    getAllGroups: (currentUser, setGroups) => {
+      
+      let email = currentUser.email;
+      email = email.substring(0, email.indexOf('.'));
+      const allGroupsRef = query(ref(database, `users/${email}/groups`))
+      let groups = []
+      onValue(allGroupsRef, (snapshot) => {
+        snapshot.forEach((child) => {
+          if (child.key == "default") {
+            groups.push(email.substring(0, email.indexOf("@")));
+          } else {
+            groups.push(child.key);
+          }
+        })
+        setGroups(groups);
+      })
+    },
+
+    getCurrentMonthTransactions: (activeGroup, currentTransactions, setCurrentTransactions, currentUser) => {
       if (activeGroup)
       {
         let email = activeGroup; 
+
+        if (activeGroup == "default") {
+          email = currentUser.email
+          console.log('did this.. now: ', email)
+        }
         let date = new Date();
         let currentMonth = date.getMonth() + 1;
         if (email.includes('.')) {
@@ -204,19 +225,17 @@ const firebaseFunctions = (() => {
     updateItem: () => {
       
     },
-    readName: () => {
-      const testRef = ref(database, `/users/${uid}`);
-      onValue(testRef, (snapshot) => {
+    getName: (email, setName) => {
+      email = email.substring(0, email.indexOf('.'));
+
+      const nameRef = ref(database, `/users/${email}`);
+      onValue(nameRef, (snapshot) => {
         const data = snapshot.val();
-        console.log("Still need to do something with: " + data);
-
+        setName(data.name);
       })
-
     },
 
-
-
-    setActiveGroup: (newGroup, setCurrentGroup) => {
+    setActiveGroup: (currentUser, newGroup, setCurrentGroup) => {
       let email = currentUser.email;
       email = email.substring(0, email.indexOf('.'));
       
@@ -231,8 +250,8 @@ const firebaseFunctions = (() => {
       // })
 
       const groupUpdate = {
-        activeGroup: {
-          newGroup: true
+        currentGroup: {
+          [newGroup]: true
         }
       }
 
@@ -268,8 +287,7 @@ export const FirebaseProvider = ({children}) => {
 
   useEffect(() => {
     if (currentGroup) {
-      firebase.getCurrentMonthTransactions(currentGroup, currentTransactions, setCurrentTransactions)
-      console.log(currentTransactions)
+      firebase.getCurrentMonthTransactions(currentGroup, currentTransactions, setCurrentTransactions, currentUser)
     }
   }, [currentGroup])
 

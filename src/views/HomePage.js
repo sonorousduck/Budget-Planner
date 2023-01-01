@@ -18,8 +18,7 @@ const HomePage = ({navigation}) => {
     useEffect(() => {
       if(!currentTransactions)
       {
-        console.log("YEEEET:" + currentGroup);
-        firebase.getCurrentMonthTransactions(currentGroup, currentTransactions, setCurrentTransactions);
+        firebase.getCurrentMonthTransactions(currentGroup, currentTransactions, setCurrentTransactions, currentUser);
       }
       if (currentTransactions && currentTransactions.length) {
         setLocalCurrentTransactions(currentTransactions);
