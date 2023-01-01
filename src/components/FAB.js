@@ -13,7 +13,7 @@ const FAB = () => {
         },
         {
           text: "Create New Budget Allocation",
-          icon: require("../../assets/favicon.png"),
+          icon: require("../../assets/icons8-coin-wallet-96.png"),
           name: "bt_budget",
           position: 2
         },

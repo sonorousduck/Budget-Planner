@@ -14,6 +14,8 @@ const HomePage = ({navigation}) => {
     
     const { firebase, signedIn, setSignedIn, currentUser, setCurrentUser, currentGroup, setCurrentGroup, currentTransactions, setCurrentTransactions } = useFirebase();
     const [localCurrentTransactions, setLocalCurrentTransactions] = useState([])
+    const [currentDate] = useState(new Date())
+    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
 
     useEffect(() => {
       if(!currentTransactions)
@@ -37,7 +39,7 @@ const HomePage = ({navigation}) => {
             <View style={styles.otherPortion}>
              
               <View style={styles.monthIndicator}>
-                <Text style={{color: 'white', fontSize: 16}}>December 2022</Text>
+                <Text style={{color: 'white', fontSize: 16}}>{months[currentDate.getMonth()]} {currentDate.getFullYear()}</Text>
               </View>
                 <ScrollView style={{height: '100%'}}>
                   {localCurrentTransactions.map((transaction, index) => (

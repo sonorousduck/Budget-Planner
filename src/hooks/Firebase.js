@@ -104,8 +104,6 @@ const firebaseFunctions = (() => {
     },
     addTransaction: (amount, description, optionalDetails, expense, date, activeGroup) => {
       const transactionUUID = uuidv4();
-      // activeGroup = activeGroup.email.substring(0, activeGroup.email.indexOf('.'));
-
       let currentMonth = date.getMonth() + 1;
 
       set(ref(database, 'transactions/' + activeGroup + '/' + date.getFullYear() + '/' + currentMonth + '/' + transactionUUID), {
@@ -167,7 +165,6 @@ const firebaseFunctions = (() => {
 
         if (activeGroup == "default") {
           email = currentUser.email
-          console.log('did this.. now: ', email)
         }
         let date = new Date();
         let currentMonth = date.getMonth() + 1;
@@ -272,7 +269,6 @@ export const FirebaseProvider = ({children}) => {
   onAuthStateChanged(auth, (user) => {
     if (user) {
       setCurrentUser(user)
-      // setCurrentGroup(user.email);
     } else {
       setCurrentUser(null);
     }

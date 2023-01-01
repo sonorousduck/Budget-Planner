@@ -4,16 +4,20 @@ import { Button } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import useFirebase from "../hooks/Firebase"
 import { Ionicons } from '@expo/vector-icons';
+import { TouchableWithoutFeedback } from "react-native-gesture-handler";
+import { useNavigation } from "@react-navigation/native";
 
 const AccountPage = () => {
     
     const { firebase, signedIn, setSignedIn, currentUser, setCurrentUser, currentGroup, setCurrentGroup } = useFirebase();
     const [groups, setGroups] = useState([])
     const [name, setName] = useState("")
+    const navigation = useNavigation();
 
     useEffect(() => {
       firebase.getAllGroups(currentUser, setGroups)
       firebase.getName(currentUser.email, setName)
+      console.log(currentGroup)
     }, [])
 
     return (
@@ -29,7 +33,7 @@ const AccountPage = () => {
                   {name} 
                 </Text>
                 <Text style={{textAlign: 'center', fontSize: 16, color: 'grey'}}>
-                  {currentUser.email}
+                  {currentUser?.email ?? ""}
                 </Text>
               </View>
 
@@ -37,28 +41,37 @@ const AccountPage = () => {
 
             <View style={styles.groups}>
               <Text style={{fontSize: 16, color: 'grey', marginBottom: 8}}>Groups</Text>
-              <View style={{height: 200}}>
+              <View style={{backgroundColor: 'rgba(192, 192, 192, 0.05)', borderRadius: 8}}>
                 {groups.map((group, index) => (
-                  <View key={index} style={{width: '100%'}}>
+                  <TouchableWithoutFeedback key={index} style={styles.groupSelector} onPress={() => {
+                    let email = currentUser.email.substring(0, currentUser.email.indexOf('@'))
+                    if (currentGroup == group || (group == email && (currentGroup=="default"))) {
+                      console.log("Already selected")
+                      return;
+                    }
+                    if (group == email) {
+                      firebase.setActiveGroup(currentUser, "default", setCurrentGroup);
+                      console.log(group)
+
+                      return;
+                    }
+                    firebase.setActiveGroup(currentUser, group, setCurrentGroup)
+                    console.log(group)
+                  }}>
                   <View style={{flexDirection: 'row'}}>
-                    <Button 
-                      onPress={() => {
-                        if (group == currentUser.email.substring(0, currentUser.email.indexOf('@'))) {
-                          console.log(group)
-                          firebase.setActiveGroup(currentUser, "default", setCurrentGroup);
-                          return;
-                        }
-                        if (currentGroup == group) {
-                          console.log("Already selected")
-                          return;
-                        }
-                        firebase.setActiveGroup(currentUser, group, setCurrentGroup)
-                      }}
-                      mode="outlined"
-                      style={{borderRadius: 4, alignItems: 'flex-start'}}
-                    >{group}</Button>
+                    {currentGroup == group || (currentGroup == "default" && group == currentUser.email.substring(0, currentUser.email.indexOf('@'))) || (group == currentUser.email.substring(0, currentUser.email.indexOf('@')) && currentGroup == currentUser.email.substring(0, currentUser.email.indexOf('.'))) ? (
+                      <Ionicons name="checkmark" size={20} style={{flex: 1, justifyContent: 'center', color: 'green'}}/>
+                    ) 
+                    :
+                    (
+                      <View style={{flex: 1}}/>
+                    )
+                    }
+                    <View style={{flex: 8}}>
+                      <Text style={{fontSize: 14}}>{group==currentUser.email.substring(0, currentUser.email.indexOf('@')) ? "My Transactions" : `${group}`}</Text>
+                    </View>
                   </View>
-                  </View>
+                  </TouchableWithoutFeedback>
 
                   ))}
               </View>
@@ -68,8 +81,9 @@ const AccountPage = () => {
             mode="outlined"
             onPress={() => {
               firebase.signOut(setSignedIn)
+              navigation.navigate("Login")
             }}
-            style={{width: '95%', marginLeft: 'auto', marginRight: 'auto', marginTop: 32, borderRadius: 0, borderColor: 'lightgrey', marginBottom: 16}}
+            style={styles.logOut}
             labelStyle={{color: 'red'}}
             >Log Out</Button>
 
@@ -90,8 +104,28 @@ const styles = StyleSheet.create({
   },
   groups: {
     marginHorizontal: 8,
+    marginTop: 16,
 
   },
+  logOut:  {
+    width: '95%', 
+    marginLeft: 'auto',
+    marginRight: 'auto', 
+    marginTop: 32, 
+    borderRadius: 0, 
+    borderColor: 'lightgrey', 
+    marginBottom: 16
+  },
+  groupSelector: {
+    borderColor: 'lightgrey',
+    borderWidth: 1,
+    borderRadius: 8,
+    width: '100%',
+    padding: 16,
+    
+
+  }
+
 });
 
 export default AccountPage;
