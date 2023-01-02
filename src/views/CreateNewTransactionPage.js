@@ -6,8 +6,9 @@ import useFirebase from "../hooks/Firebase"
 import CalendarPicker from 'react-native-calendar-picker';
 import { FontAwesome, Entypo } from '@expo/vector-icons';
 // import DropDownPicker from 'react-native-dropdown-picker'; Todo: Uninstall this if I don't use it for categories
-import { useIsFocused } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
+import { ScrollView } from "react-native-gesture-handler";
+
 
 const CreateNewTransactionPage = () => {
 
@@ -16,15 +17,16 @@ const CreateNewTransactionPage = () => {
     const [dateTime, setDateTime] = useState(new Date())
     const [dateTimePretty, setDateTimePretty] = useState(new Date().toDateString())
     const [amount, setAmount] = useState(0.00)
-    const [category, setCategory] = useState(null)
+    const [categories, setCategories] = useState([])
+    const [selectedCategories, setSelectedCategories] = useState([])
     const [optionalDetails, setOptionalDetails] = useState("")
     const [expense, setExpense] = useState(true);
     const [dateModalVisible, setDateModalVisible] = useState(false);
+    const [categoriesModalVisible, setCategoriesModalVisible] = useState(false);
     const [calendarSelected, setCalendarSelected] = useState(null);
     const [showPlus, setShowPlus] = useState(true);
     const [negative, setNegative] = useState("-");
     const [color, setColor] = useState("red");
-    const isVisible = useIsFocused();
     const [changed, setChanged] = useState(false);
     const navigation = useNavigation();
     const isFirstRender = useRef(true);
@@ -32,12 +34,13 @@ const CreateNewTransactionPage = () => {
 
     useEffect(() => {
         if (isFirstRender.current) {
+            firebase.getCategories(currentUser, currentGroup, setCategories);
             return;
         }
         if (!changed) {
             setChanged(true);
         }
-    }, [description, amount, dateTime, optionalDetails, category])
+    }, [description, amount, dateTime, optionalDetails, categories])
 
     useEffect(() => {
         if (isFirstRender.current) {
@@ -62,7 +65,7 @@ const CreateNewTransactionPage = () => {
         if (amount == 0.0 || description == "") {
             console.log("TODO: Incomplete Error Returning! Return a message to the user")
             return;
-        } 
+        }
         firebase.addTransaction(amount, description, optionalDetails, expense, dateTime, currentGroup)
         goBack();
     }
@@ -127,6 +130,66 @@ const CreateNewTransactionPage = () => {
 
                         </View>
                     </Modal>
+                    <Modal
+                        transparent={true}
+                        visible={categoriesModalVisible}
+                        animationType="slide"
+                        onRequestClose={() => {
+                            setCategoriesModalVisible(!categoriesModalVisible)
+                        }}
+                    >
+                        <View style={styles.centeredView}>
+                            <View style={styles.modalCategoryView}>
+                                <View style={{ flexDirection: 'row', marginBottom: 8 }}>
+                                    <View style={{ flex: 2 }}>
+                                        <Button
+                                            mode="text"
+                                            labelStyle={{ color: 'grey' }}
+                                            onPress={() => {
+                                                setCategoriesModalVisible(!categoriesModalVisible);
+                                            }}
+                                        >
+                                            Cancel
+                                        </Button>
+                                    </View>
+                                    <View style={{ flex: 3 }} />
+                                    <View style={{ flex: 2 }}>
+                                        <Button
+                                            mode="text"
+                                            labelStyle={{ color: '#3366CC' }}
+                                            onPress={() => {
+
+                                                setCategoriesModalVisible(!categoriesModalVisible);
+                                            }}
+                                        >
+                                            Done
+                                        </Button>
+                                    </View>
+                                </View>
+                                <ScrollView style={{width: '95%'}}>
+
+                                {categories.map((category, index) => (
+                                    <TouchableOpacity key={index} style={{borderBottomWidth: 1, borderColor: 'lightgrey', width: '100%', flex: 1, height: 30, justifyContent: 'center'}} onPress={() => {
+                                        let currentSelectedCategories = selectedCategories;
+
+                                        if (selectedCategories.includes(category)) {
+                                            currentSelectedCategories = currentSelectedCategories.filter(checked => checked !== category)
+                                            setSelectedCategories(currentSelectedCategories)
+                                        } else {
+                                            currentSelectedCategories.push(category);
+                                            setSelectedCategories(currentSelectedCategories);
+                                        }
+                                        console.log(selectedCategories)
+                                    }}>
+                                        <Text>{category}</Text>
+                                    </TouchableOpacity>
+                                ))}
+                                </ScrollView>
+ 
+                            </View>
+                        </View>
+
+                    </Modal>
 
                     <View style={{ flexDirection: 'row', flex: 1 }}>
                         <Button
@@ -144,6 +207,7 @@ const CreateNewTransactionPage = () => {
                         <TextInput multiline={true} style={[styles.title, styles.editable]} placeholder={"Transaction"} value={description} onChangeText={description => setDescription(description)} />
 
                         <TouchableOpacity onPress={() => {
+                            setCategoriesModalVisible(false);
                             setDateModalVisible(true);
                         }}>
                             <View style={{ flexDirection: 'row', marginTop: 16 }}>
@@ -216,18 +280,41 @@ const CreateNewTransactionPage = () => {
                             )
                         }
                         <Text style={{ marginLeft: 16, marginTop: 16, fontSize: 16, fontWeight: 'bold' }}>Categories</Text>
-
+                        {selectedCategories.length ? (
+                            <TouchableOpacity style={styles.category} onPress={() => {
+                                setDateModalVisible(false);
+                                setCategoriesModalVisible(!categoriesModalVisible)
+                            }}>
+                                {selectedCategories.map((category, index) => (
+                                    <View style={{borderWidth: 1, padding: 4, borderRadius: 8, marginHorizontal: 4, flexWrap: 'nowrap'}}>
+                                        <Text key={index} style={{fontSize: 16}}>{category}</Text>
+                                    </View>
+                                ))}
+                            </TouchableOpacity>
+                        )
+                            :
+                            (
+                                <TouchableOpacity style={{}} onPress={() => {
+                                    setDateModalVisible(false);
+                                    setCategoriesModalVisible(!categoriesModalVisible)
+                                }}>
+                                    <View style={{ flexDirection: 'row', marginTop: 16, marginLeft: 16 }}>
+                                        <Entypo name="plus" size={20} hidden={true} />
+                                        <Text style={{ fontSize: 16, color: '#A9A9A9', marginLeft: 8 }}>Categories</Text>
+                                    </View>
+                                </TouchableOpacity>
+                            )}
 
                     </View>
                     <View style={styles.center}>
-                        <Button 
+                        <Button
                             mode="contained"
                             style={styles.saveButton}
                             onPress={() => {
                                 addTransaction();
                             }}
                             icon="content-save"
-                            >Save Transaction</Button>
+                        >Save Transaction</Button>
                     </View>
                 </View>
             </TouchableWithoutFeedback>
@@ -243,7 +330,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         marginBottom: 8,
     },
-    saveButton:  {
+    saveButton: {
         width: '95%',
         marginLeft: 'auto',
         marginRight: 'auto',
@@ -252,64 +339,67 @@ const styles = StyleSheet.create({
     otherPortion: {
         flex: 6,
         // backgroundColor: '#638a7e'
-      },
-      monthIndicator: {
+    },
+    monthIndicator: {
         backgroundColor: '#23508b',
         width: '50%',
         marginTop: 16,
         marginBottom: 16,
         padding: 16
-      },
-      informationCard: {
+    },
+    informationCard: {
         width: '95%',
         alignSelf: 'center',
         backgroundColor: 'rgba(99, 138, 126, 0.7)',
         height: '95%',
         marginTop: 8,
         borderRadius: 10,
-      },
-      title: {
+    },
+    title: {
         // alignSelf: 'center',
         // textAlign: 'center',
         marginLeft: 16,
         fontSize: 28,
         fontWeight: 'bold'
-      },
-    
-      date: {
+    },
+
+    date: {
         // alignSelf: 'center',
         textAlign: 'center',
         marginTop: 8,
         fontSize: 16
-      },
-      cost: {
+    },
+    cost: {
         // alignSelf: 'center',
         textAlign: 'center',
         fontSize: 24,
         marginTop: 8
-      },
-      additionalDetails: {
-    
-      },
-      category: {
-    
-      },
-      editable: {
-    
-      },
-      input: {
+    },
+    additionalDetails: {
+
+    },
+    category: {
+        marginLeft: 24,
+        marginTop: 16,
+        borderRadius: 16,
+        padding: 4,
+    },
+    editable: {
+
+    },
+    input: {
         flex: 3,
         fontSize: 20,
         lineHeight: 28,
-    
-      },
-    
-      centeredView: {
+
+    },
+
+    centeredView: {
         flex: 1,
         justifyContent: 'flex-end',
     },
-    
-      modalView: {
+
+    modalView: {
         margin: 2,
         backgroundColor: "white",
         borderRadius: 20,
@@ -317,14 +407,33 @@ const styles = StyleSheet.create({
         alignItems: "center",
         shadowColor: "#000",
         shadowOffset: {
-          width: 0,
-          height: 2
+            width: 0,
+            height: 2
         },
         shadowOpacity: 0.25,
         shadowRadius: 4,
         elevation: 5,
         paddingBottom: 64
-      },
+    },
+
+    modalCategoryView: {
+        margin: 2,
+        backgroundColor: "white",
+        borderRadius: 20,
+        padding: 16,
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
+        paddingBottom: 64,
+        width: '100%',
+        height: 400
+    },
 });
 
 

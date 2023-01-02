@@ -33,32 +33,32 @@ const firebaseFunctions = (() => {
   })
   let currentUser = auth.currentUser;
   var activeGroup = currentUser;
-  
+
 
   return {
     getCurrentUser: () => {
       return currentUser;
     },
-    
+
     signIn: (email, password, setSignedIn) => {
       signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        // Signed in 
-        currentUser = userCredential.user;
-        activeGroup = currentUser;
-        setSignedIn(true);
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-      });
+        .then((userCredential) => {
+          // Signed in 
+          currentUser = userCredential.user;
+          activeGroup = currentUser;
+          setSignedIn(true);
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+        });
 
     },
 
     createUser: (name, email, password) => {
       console.log("create user called")
       createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
+        .then((userCredential) => {
           currentUser = userCredential.user;
           // Keep the @email because there isn't a way to check if they already exist better than this I think... 
           // But you have to get rid of .com since . isn't allowed.
@@ -70,6 +70,13 @@ const firebaseFunctions = (() => {
             categories: {
               Groceries: true,
               Rent: true,
+              Utilities: true,
+              Gas: true,
+              Entertainment: true,
+              Phone: true,
+              Insurance: true,
+              Donations: true,
+              Savings: true,
             },
             groups: {
               default: true
@@ -79,15 +86,15 @@ const firebaseFunctions = (() => {
             }
           })
 
-      })
-      .catch((error) => {
+        })
+        .catch((error) => {
           const errorCode = error.code;
           const errorMessage = error.message;
           console.log(errorMessage);
-      })
+        })
     },
 
-   
+
 
     signOut: (setSignedIn) => {
       signOut(auth).then(() => {
@@ -98,7 +105,7 @@ const firebaseFunctions = (() => {
         console.log(error);
       });
     },
-   
+
     addItem: () => {
 
     },
@@ -141,7 +148,7 @@ const firebaseFunctions = (() => {
     },
 
     getAllGroups: (currentUser, setGroups) => {
-      
+
       let email = currentUser.email;
       email = email.substring(0, email.indexOf('.'));
       const allGroupsRef = query(ref(database, `users/${email}/groups`))
@@ -159,9 +166,8 @@ const firebaseFunctions = (() => {
     },
 
     getCurrentMonthTransactions: (activeGroup, currentTransactions, setCurrentTransactions, currentUser) => {
-      if (activeGroup)
-      {
-        let email = activeGroup; 
+      if (activeGroup) {
+        let email = activeGroup;
 
         if (activeGroup == "default") {
           email = currentUser.email
@@ -220,7 +226,7 @@ const firebaseFunctions = (() => {
 
     },
     updateItem: () => {
-      
+
     },
     getName: (email, setName) => {
       email = email.substring(0, email.indexOf('.'));
@@ -235,16 +241,6 @@ const firebaseFunctions = (() => {
     setActiveGroup: (currentUser, newGroup, setCurrentGroup) => {
       let email = currentUser.email;
       email = email.substring(0, email.indexOf('.'));
-      
-      // let currentActiveGroup = null;
-
-      // const activeGroupRef = query(ref(database, "users/" + email + "/" + 'activeGroup'))
-      // onValue(activeGroupRef, (snapshot) => {
-      //   snapshot.forEach((child) => {
-      //     console.log(child.key());
-      //     currentActiveGroup = child.key();
-      //   })
-      // })
 
       const groupUpdate = {
         currentGroup: {
@@ -254,13 +250,42 @@ const firebaseFunctions = (() => {
 
       update(ref(database, `users/${email}`), groupUpdate)
       setCurrentGroup(newGroup);
-    }
+    },
+
+    getCategories: (currentUser, currentGroup, setCategories) => {
+      const email = currentUser.email.substring(0, currentUser.email.indexOf('.'));
+      const username = currentUser.email.substring(0, currentUser.email.indexOf('@'));
+      console.log(currentGroup);
+      if (currentGroup == "default" || currentGroup == email || currentGroup == username || currentGroup == currentUser.email) {
+        if (currentGroup == currentUser.email) {
+          currentGroup = currentGroup.substring(0, currentGroup.indexOf('@'));
+        }
+
+        const categoriesRef = ref(database, `/users/${email}/categories`);
+        onValue(categoriesRef,  (snapshot) => {
+          const data = snapshot.val();
+          setCategories(Object.keys(data));
+          console.log(Object.keys(data))
+        })
+        return;
+      }
+
+      const categoriesRef = ref(database, `/groups/${currentGroup}/categories`);
+      onValue(categoriesRef, (snapshot) => {
+        const data = snapshot.val();
+        setCategories(Object.keys(data));
+        console.log(Object.keys(data))
+
+      })
+
+      return;
+    },
   }
 })()
 
-export const FirebaseProvider = ({children}) => {
+export const FirebaseProvider = ({ children }) => {
   const [signedIn, setSignedIn] = useState(false)
-  const [currentUser, setCurrentUser ] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
   const [firebase] = useState(firebaseFunctions);
   const [currentGroup, setCurrentGroup] = useState(null);
   const [currentTransactions, setCurrentTransactions] = useState([]);
