@@ -8,7 +8,7 @@ const FirebaseContext = createContext(null);
 
 // Optionally import the services that you want to use
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "firebase/auth";
-import { getDatabase, ref, onValue, set, update, query, orderByChild, remove } from "firebase/database";
+import { getDatabase, ref, onValue, set, update, query, orderByChild, remove, orderByKey } from "firebase/database";
 import { uuidv4 } from "@firebase/util";
 //import {...} from "firebase/firestore";
 //import {...} from "firebase/functions";
@@ -255,13 +255,13 @@ const firebaseFunctions = (() => {
     getCategories: (currentUser, currentGroup, setCategories) => {
       const email = currentUser.email.substring(0, currentUser.email.indexOf('.'));
       const username = currentUser.email.substring(0, currentUser.email.indexOf('@'));
-      console.log(currentGroup);
+
       if (currentGroup == "default" || currentGroup == email || currentGroup == username || currentGroup == currentUser.email) {
         if (currentGroup == currentUser.email) {
           currentGroup = currentGroup.substring(0, currentGroup.indexOf('@'));
         }
 
-        const categoriesRef = ref(database, `/users/${email}/categories`);
+        const categoriesRef = query(ref(database, `/users/${email}/categories`), orderByKey());
         onValue(categoriesRef,  (snapshot) => {
           const data = snapshot.val();
           setCategories(Object.keys(data));

@@ -4,7 +4,7 @@ import { Button } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import useFirebase from "../hooks/Firebase"
 import CalendarPicker from 'react-native-calendar-picker';
-import { FontAwesome, Entypo } from '@expo/vector-icons';
+import { FontAwesome, Entypo, AntDesign, Ionicons } from '@expo/vector-icons';
 // import DropDownPicker from 'react-native-dropdown-picker'; Todo: Uninstall this if I don't use it for categories
 import { useNavigation } from "@react-navigation/native";
 import { ScrollView } from "react-native-gesture-handler";
@@ -169,21 +169,34 @@ const CreateNewTransactionPage = () => {
                                 <ScrollView style={{width: '95%'}}>
 
                                 {categories.map((category, index) => (
-                                    <TouchableOpacity key={index} style={{borderBottomWidth: 1, borderColor: 'lightgrey', width: '100%', flex: 1, height: 30, justifyContent: 'center'}} onPress={() => {
+                                    <TouchableOpacity key={index} style={styles.categorySelection} onPress={() => {
                                         let currentSelectedCategories = selectedCategories;
 
                                         if (selectedCategories.includes(category)) {
                                             currentSelectedCategories = currentSelectedCategories.filter(checked => checked !== category)
                                             setSelectedCategories(currentSelectedCategories)
+
                                         } else {
                                             currentSelectedCategories.push(category);
+                                            currentSelectedCategories = currentSelectedCategories.filter(checked => checked !== category || checked === category)
                                             setSelectedCategories(currentSelectedCategories);
                                         }
-                                        console.log(selectedCategories)
                                     }}>
-                                        <Text>{category}</Text>
+                                        {selectedCategories.includes(category) ? (
+                                            <Ionicons name="checkmark" size={20} style={{color: 'green', marginRight: 8}}/>
+                                        ) :
+                                        <></>
+                                        }
+                                        <Text style={{fontSize: 16}}>{category}</Text>
                                     </TouchableOpacity>
                                 ))}
+                                <TouchableOpacity style={[styles.categorySelection, {borderBottomWidth: 0, justifyContent: 'center'}]} onPress={() => {
+                                    console.log("Implement this")
+                                }}>
+                                    <Entypo name="plus" size={20} style={{color: '#A9A9A9', marginRight: 8}}></Entypo>
+                                    <Text style={{color: '#A9A9A9', fontSize: 16}}>Create New Category</Text>
+                                </TouchableOpacity>
+                                
                                 </ScrollView>
  
                             </View>
@@ -281,16 +294,30 @@ const CreateNewTransactionPage = () => {
                         }
                         <Text style={{ marginLeft: 16, marginTop: 16, fontSize: 16, fontWeight: 'bold' }}>Categories</Text>
                         {selectedCategories.length ? (
-                            <TouchableOpacity style={styles.category} onPress={() => {
-                                setDateModalVisible(false);
-                                setCategoriesModalVisible(!categoriesModalVisible)
-                            }}>
-                                {selectedCategories.map((category, index) => (
-                                    <View style={{borderWidth: 1, padding: 4, borderRadius: 8, marginHorizontal: 4, flexWrap: 'nowrap'}}>
-                                        <Text key={index} style={{fontSize: 16}}>{category}</Text>
-                                    </View>
-                                ))}
-                            </TouchableOpacity>
+                            <ScrollView >
+                                <View style={styles.category}>
+                                    {selectedCategories.map((category, index) => (
+                                        <TouchableOpacity key={index} style={styles.selectedCategories} onPress={() => {
+                                            let currentSelectedCategories = selectedCategories;
+                                            currentSelectedCategories = currentSelectedCategories.filter(checked => checked !== category)
+                                            setSelectedCategories(currentSelectedCategories)
+                                            }}>
+                                            <AntDesign name="close" size={20} style={{marginRight: 8}}/>
+                                            <Text style={{fontSize: 16}}>{category}</Text>
+                                        </TouchableOpacity>
+                                    ))}
+                                    
+                                    <TouchableOpacity style={[styles.selectedCategories, {borderColor: '#A9A9A9', flexBasis: '20%', justifyContent: 'center'}]} onPress={() => {
+                                        setDateModalVisible(false);
+                                        setCategoriesModalVisible(!categoriesModalVisible)
+                                    }}>
+                                        <View style={{flexDirection: 'row'}}>
+                                            <Entypo name="plus" size={20} hidden={true} style={{color: '#A9A9A9'}} />
+                                        </View>
+                                    </TouchableOpacity>
+                                </View>
+
+                            </ScrollView>
                         )
                             :
                             (
@@ -375,18 +402,6 @@ const styles = StyleSheet.create({
         fontSize: 24,
         marginTop: 8
     },
-    additionalDetails: {
-
-    },
-    category: {
-        marginLeft: 24,
-        marginTop: 16,
-        borderRadius: 16,
-        padding: 4,
-    },
-    editable: {
-
-    },
     input: {
         flex: 3,
         fontSize: 20,
@@ -434,6 +449,39 @@ const styles = StyleSheet.create({
         width: '100%',
         height: 400
     },
+    categorySelection: {
+        borderBottomWidth: 1, 
+        borderColor: 'lightgrey', 
+        width: '100%', 
+        flex: 1, 
+        // justifyContent: 'center',
+        paddingVertical: 16,
+        flexDirection: 'row'
+    },
+    selectedCategories: {
+        borderWidth: 1, 
+        padding: 4,
+        borderRadius: 8, 
+        marginHorizontal: 4, 
+        flexDirection: 'row', 
+        flexBasis: '45%',
+        marginVertical: 8
+    },
+    category: {
+        marginLeft: 24,
+        marginTop: 16,
+        borderRadius: 16,
+        padding: 4,
+        flex: 1,
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+    },
+    addCategories: {
+        borderWidth: 1,
+        padding: 4,
+        flexDirection: 'row',
+        flex: 1
+    }
 });
 
 
