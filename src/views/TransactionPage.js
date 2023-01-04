@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
-import { View, Text, StyleSheet, Alert, TextInput, Keyboard, TouchableWithoutFeedback, TouchableOpacity, Modal, Pressable } from "react-native"
+import { View, Text, StyleSheet, Alert, TextInput, Keyboard, TouchableWithoutFeedback, TouchableOpacity, Modal, Pressable, ScrollView } from "react-native"
 import { Button } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import useFirebase from "../hooks/Firebase"
 import CalendarPicker from 'react-native-calendar-picker';
-import { FontAwesome, Entypo } from '@expo/vector-icons';
+import { FontAwesome, Entypo, Ionicons, AntDesign } from '@expo/vector-icons';
 // import DropDownPicker from 'react-native-dropdown-picker'; Todo: Uninstall this if I don't use it for categories
 import { useIsFocused } from "@react-navigation/native";
 
@@ -12,7 +12,7 @@ import { useIsFocused } from "@react-navigation/native";
 
 const TransactionPage = ({ route, navigation }) => {
 
-  const { firebase, signedIn, setSignedIn, currentUser, setCurrentUser } = useFirebase();
+  const { firebase, signedIn, setSignedIn, currentUser, setCurrentUser, currentGroup } = useFirebase();
   const props = route.params.props.props;
   console.log(route)
   const email = route.params.props.email;
@@ -20,7 +20,6 @@ const TransactionPage = ({ route, navigation }) => {
   const [dateTime, setDateTime] = useState(new Date(props.date))
   const [dateTimePretty, setDateTimePretty] = useState(new Date(props.date).toDateString())
   const [amount, setAmount] = useState(props.amount)
-  const [category, setCategory] = useState(props.category)
   const [optionalDetails, setOptionalDetails] = useState(props.optionalDetails)
   const [expense, setExpense] = useState(props.expense);
   const [dateModalVisible, setDateModalVisible] = useState(false);
@@ -34,6 +33,9 @@ const TransactionPage = ({ route, navigation }) => {
   const minDate = new Date(new Date().setFullYear(todayDate.getFullYear() - 3))
   const maxDate = new Date(new Date().setFullYear(todayDate.getFullYear() + 3))
   const isFirstRender = useRef(true);
+  const [categories, setCategories] = useState([])
+  const [selectedCategories, setSelectedCategories] = useState(props.category ?? [])
+  const [categoriesModalVisible, setCategoriesModalVisible] = useState(false);
 
   const showConfirmDialog = () => {
     return Alert.alert(
@@ -54,25 +56,18 @@ const TransactionPage = ({ route, navigation }) => {
     )
   }
 
-  // const updateFirebase = () => {
-  //   console.log(expense)
-  //   firebase.updateTransaction(email, description, expense, amount, dateTime, optionalDetails, props.uuid);
-  // }
-
-  // useEffect(() => {
-  //   const unsubscribe = navigation.addListener("focus", () => {});
   useEffect(() => {
     if (isFirstRender.current) {
+      firebase.getCategories(currentUser, currentGroup, setCategories);
       return;
     }
     if (changed) {
-      console.log("called when screen close"); 
-      firebase.updateTransaction(email, description, expense, amount, dateTime, optionalDetails, props.uuid);
+      firebase.updateTransaction(email, description, expense, amount, dateTime, optionalDetails, selectedCategories, props.uuid);
     }
-    
 
-}, [isVisible]);
-    
+
+  }, [isVisible]);
+
 
   useEffect(() => {
     if (isFirstRender.current) {
@@ -82,7 +77,7 @@ const TransactionPage = ({ route, navigation }) => {
       console.log("Something was updated!")
       setChanged(true);
     }
-  }, [description, amount, dateTime, optionalDetails, category])
+  }, [description, amount, dateTime, optionalDetails, selectedCategories])
 
   useEffect(() => {
     if (isFirstRender.current) {
@@ -109,7 +104,7 @@ const TransactionPage = ({ route, navigation }) => {
         Keyboard.dismiss();
         setShowPlus(true);
       }}>
-        <View style={{ elevation: 1, backgroundColor: 'lightgrey', width: '97%', alignSelf: 'center', height: '100%', borderRadius: 8, justifyContent: 'flex-end'}}>
+        <View style={{ elevation: 1, backgroundColor: 'lightgrey', width: '97%', alignSelf: 'center', height: '100%', borderRadius: 8, justifyContent: 'flex-end' }}>
           <Modal
             transparent={true}
             visible={dateModalVisible}
@@ -164,6 +159,79 @@ const TransactionPage = ({ route, navigation }) => {
 
             </View>
           </Modal>
+          <Modal
+            transparent={true}
+            visible={categoriesModalVisible}
+            animationType="slide"
+            onRequestClose={() => {
+              setCategoriesModalVisible(!categoriesModalVisible)
+            }}
+          >
+            <View style={styles.centeredView}>
+              <View style={styles.modalCategoryView}>
+                <View style={{ flexDirection: 'row', marginBottom: 8 }}>
+                  <View style={{ flex: 2 }}>
+                    {/* <Button
+                      mode="text"
+                      labelStyle={{ color: 'grey' }}
+                      onPress={() => {
+                        setCategoriesModalVisible(!categoriesModalVisible);
+                      }}
+                    >
+                      Cancel
+                    </Button> */}
+                  </View>
+                  <View style={{ flex: 3 }} />
+                  <View style={{ flex: 2 }}>
+                    <Button
+                      mode="text"
+                      labelStyle={{ color: '#3366CC' }}
+                      onPress={() => {
+
+                        setCategoriesModalVisible(!categoriesModalVisible);
+                      }}
+                    >
+                      Done
+                    </Button>
+                  </View>
+                </View>
+                <ScrollView style={{ width: '95%' }}>
+
+                  {categories.map((category, index) => (
+                    <TouchableOpacity key={index} style={styles.categorySelection} onPress={() => {
+                      let currentSelectedCategories = selectedCategories;
+
+                      if (selectedCategories.includes(category)) {
+                        currentSelectedCategories = currentSelectedCategories.filter(checked => checked !== category)
+                        setSelectedCategories(currentSelectedCategories)
+
+                      } else {
+                        currentSelectedCategories.push(category);
+                        currentSelectedCategories = currentSelectedCategories.filter(checked => checked !== category || checked === category)
+                        setSelectedCategories(currentSelectedCategories);
+                      }
+                    }}>
+                      {selectedCategories.includes(category) ? (
+                        <Ionicons name="checkmark" size={20} style={{ color: 'green', marginRight: 8 }} />
+                      ) :
+                        <></>
+                      }
+                      <Text style={{ fontSize: 16 }}>{category}</Text>
+                    </TouchableOpacity>
+                  ))}
+                  <TouchableOpacity style={[styles.categorySelection, { borderBottomWidth: 0, justifyContent: 'center' }]} onPress={() => {
+                    console.log("Implement this")
+                  }}>
+                    <Entypo name="plus" size={20} style={{ color: '#A9A9A9', marginRight: 8 }}></Entypo>
+                    <Text style={{ color: '#A9A9A9', fontSize: 16 }}>Create New Category</Text>
+                  </TouchableOpacity>
+
+                </ScrollView>
+
+              </View>
+            </View>
+
+          </Modal>
 
           <View style={{ flexDirection: 'row', flex: 1 }}>
             <Button
@@ -201,69 +269,108 @@ const TransactionPage = ({ route, navigation }) => {
             </TouchableOpacity>
 
             <Text style={{ marginLeft: 16, marginTop: 16, fontSize: 16, fontWeight: 'bold' }}>Amount</Text>
-            <View style={{flexDirection: 'row', marginTop: 16, marginLeft: 16, backgroundColor: '#c0c0c0', borderRadius: 4, marginRight: 16}}>
-            <Button 
-              mode="text"
-              style={{marginTop: 4}}
-              labelStyle={{color: color, fontSize: 16, lineHeight: 18}}
-              onPress={() => {
-                console.log(`Expense Before: ${expense}`)
-                setExpense(!expense);
-              }}
+            <View style={{ flexDirection: 'row', marginTop: 16, marginLeft: 16, backgroundColor: '#c0c0c0', borderRadius: 4, marginRight: 16 }}>
+              <Button
+                mode="text"
+                style={{ marginTop: 4 }}
+                labelStyle={{ color: color, fontSize: 16, lineHeight: 18 }}
+                onPress={() => {
+                  console.log(`Expense Before: ${expense}`)
+                  setExpense(!expense);
+                }}
               >
                 {negative}
-            </Button>
-            <View style={{width: 1, backgroundColor: '#909090', marginRight: 8, alignItems: 'center'}}/>
-            <Text style={{fontSize: 16, color: color, justifyContent: 'center', alignContent: 'center', lineHeight: 42, marginRight: 2}}>
-              $
-            </Text>
-            <TextInput
-              style={[styles.input, {color: color}]}
-              multiline={true}
-              value={"" + amount}
-              onChangeText={
-                (amount) => setAmount(amount)
-              }
-              keyboardType="numeric"
+              </Button>
+              <View style={{ width: 1, backgroundColor: '#909090', marginRight: 8, alignItems: 'center' }} />
+              <Text style={{ fontSize: 16, color: color, justifyContent: 'center', alignContent: 'center', lineHeight: 42, marginRight: 2 }}>
+                $
+              </Text>
+              <TextInput
+                style={[styles.input, { color: color }]}
+                multiline={true}
+                value={"" + amount}
+                onChangeText={
+                  (amount) => setAmount(amount)
+                }
+                keyboardType="numeric"
               ></TextInput>
-            </View> 
+            </View>
 
 
             <Text style={{ marginLeft: 16, marginTop: 16, fontSize: 16, fontWeight: 'bold' }}>Optional Details</Text>
             {optionalDetails != "" ?
               (
-                <View style={{flexDirection: 'row', marginTop: 16, marginLeft: 16}}>
+                <View style={{ flexDirection: 'row', marginTop: 16, marginLeft: 16 }}>
 
-                <TextInput
-                  multiline={true}
-                  value={optionalDetails}
-                  onChangeText={
-                    optionalDetails => setOptionalDetails(optionalDetails)
-                  }
-                />
+                  <TextInput
+                    multiline={true}
+                    value={optionalDetails}
+                    onChangeText={
+                      optionalDetails => setOptionalDetails(optionalDetails)
+                    }
+                  />
                 </View>
               )
               :
               (
-                <View style={{flexDirection: 'row', marginTop: 16, marginLeft: 16}}>
+                <View style={{ flexDirection: 'row', marginTop: 16, marginLeft: 16 }}>
                   {showPlus ? (
                     <Entypo name="plus" size={20} hidden={true} />
                   ) : <></>
                   }
 
                   <TextInput
-                    style={{marginLeft: 8}}
+                    style={{ marginLeft: 8 }}
                     placeholder="Optional Details"
                     onFocus={() => {
                       setShowPlus(false);
                     }}
                     onBlur={(text) => {
-                      setOptionalDetails(text.nativeEvent.text)}}
+                      setOptionalDetails(text.nativeEvent.text)
+                    }}
                   />
                 </View>
               )
             }
             <Text style={{ marginLeft: 16, marginTop: 16, fontSize: 16, fontWeight: 'bold' }}>Categories</Text>
+            {selectedCategories.length ? (
+              <ScrollView >
+                <View style={styles.category}>
+                  {selectedCategories.map((category, index) => (
+                    <TouchableOpacity key={index} style={styles.selectedCategories} onPress={() => {
+                      let currentSelectedCategories = selectedCategories;
+                      currentSelectedCategories = currentSelectedCategories.filter(checked => checked !== category)
+                      setSelectedCategories(currentSelectedCategories)
+                    }}>
+                      <AntDesign name="close" size={20} style={{ marginRight: 8 }} />
+                      <Text style={{ fontSize: 16 }}>{category}</Text>
+                    </TouchableOpacity>
+                  ))}
+
+                  <TouchableOpacity style={[styles.selectedCategories, { borderColor: '#A9A9A9', flexBasis: '20%', justifyContent: 'center' }]} onPress={() => {
+                    setDateModalVisible(false);
+                    setCategoriesModalVisible(!categoriesModalVisible)
+                  }}>
+                    <View style={{ flexDirection: 'row' }}>
+                      <Entypo name="plus" size={20} hidden={true} style={{ color: '#A9A9A9' }} />
+                    </View>
+                  </TouchableOpacity>
+                </View>
+
+              </ScrollView>
+            )
+              :
+              (
+                <TouchableOpacity style={{}} onPress={() => {
+                  setDateModalVisible(false);
+                  setCategoriesModalVisible(!categoriesModalVisible)
+                }}>
+                  <View style={{ flexDirection: 'row', marginTop: 16, marginLeft: 16 }}>
+                    <Entypo name="plus" size={20} hidden={true} />
+                    <Text style={{ fontSize: 16, color: '#A9A9A9', marginLeft: 8 }}>Categories</Text>
+                  </View>
+                </TouchableOpacity>
+              )}
 
 
           </View>
@@ -335,7 +442,7 @@ const styles = StyleSheet.create({
   centeredView: {
     flex: 1,
     justifyContent: 'flex-end',
-    },
+  },
 
   modalView: {
     margin: 2,
@@ -353,6 +460,57 @@ const styles = StyleSheet.create({
     elevation: 5,
     paddingBottom: 64
   },
+  modalCategoryView: {
+    margin: 2,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 16,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+    paddingBottom: 64,
+    width: '100%',
+    height: 400
+  },
+  categorySelection: {
+    borderBottomWidth: 1,
+    borderColor: 'lightgrey',
+    width: '100%',
+    flex: 1,
+    // justifyContent: 'center',
+    paddingVertical: 16,
+    flexDirection: 'row'
+  },
+  selectedCategories: {
+    borderWidth: 1,
+    padding: 4,
+    borderRadius: 8,
+    marginHorizontal: 4,
+    flexDirection: 'row',
+    flexBasis: '45%',
+    marginVertical: 8
+  },
+  category: {
+    marginLeft: 24,
+    marginTop: 16,
+    borderRadius: 16,
+    padding: 4,
+    flex: 1,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  addCategories: {
+    borderWidth: 1,
+    padding: 4,
+    flexDirection: 'row',
+    flex: 1
+  }
 
 });
 

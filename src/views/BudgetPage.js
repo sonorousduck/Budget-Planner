@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet} from "react-native"
+import { View, Text, StyleSheet, ScrollView } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context";
 import useFirebase from "../hooks/Firebase"
 import { FloatingAction } from "react-native-floating-action";
@@ -7,48 +7,47 @@ import FAB from "../components/FAB";
 import { Button } from "react-native-paper";
 
 const BudgetPage = () => {
-    
+
     const { firebase, signedIn, setSignedIn, currentUser, setCurrentUser, currentGroup, setCurrentGroup } = useFirebase();
-    
+
     return (
-        <SafeAreaView style={{flex: 1}} edges={['left', 'right', 'top']}>
-            <View style={styles.circleBudget}>
-                <Text>Hello There!</Text>
-
-            </View>
-            <Button onPress={firebase.readName}>
-                Get Name
-            </Button>
-
-            <Button onPress={() => {
-                
-                amount = 1.03;
-                date = new Date();
-                expense = true;
-                description = "Newest";
-                optionalDetails = "";
-                firebase.addTransaction(amount, description, optionalDetails, expense, date, currentGroup);
-                }}>
-                Add transaction
-            </Button>
-
-            <View style={styles.tableBudget}>
-                <Text> General Kenobi </Text>
+        <SafeAreaView style={{ flex: 1, height: '100%' }} edges={['left', 'right', 'top']}>
+            <View style={styles.graphPortion}>
+                {/* This is where the circle budget will go. Maybe a bar instead if the circle proves too difficult */}
+                {/* <ExpenditureGraph/> */}
             </View>
 
-            <FAB/>
+
+            <View style={styles.otherPortion}>
+                <ScrollView style={{ height: '100%' }}>
+
+
+                </ScrollView>
+
+            </View>
+
+            <FAB />
         </SafeAreaView>
     )
 }
 
 const styles = StyleSheet.create({
     circleBudget: {
-      flex: 1,
+        flex: 1,
     },
     tableBudget: {
         flex: 3
-    }
-  });
-  
+    },
+    graphPortion: {
+        flex: 3,
+        backgroundColor: 'lightgrey'
+        // backgroundColor: "#2d2e2e"
+    },
+    otherPortion: {
+        flex: 6,
+        // backgroundColor: '#638a7e'
+    },
+});
+
 
 export default BudgetPage;

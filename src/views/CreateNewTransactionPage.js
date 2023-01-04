@@ -66,7 +66,7 @@ const CreateNewTransactionPage = () => {
             console.log("TODO: Incomplete Error Returning! Return a message to the user")
             return;
         }
-        firebase.addTransaction(amount, description, optionalDetails, expense, dateTime, currentGroup)
+        firebase.addTransaction(amount, description, optionalDetails, expense, dateTime, selectedCategories, currentGroup)
         goBack();
     }
 
@@ -142,7 +142,7 @@ const CreateNewTransactionPage = () => {
                             <View style={styles.modalCategoryView}>
                                 <View style={{ flexDirection: 'row', marginBottom: 8 }}>
                                     <View style={{ flex: 2 }}>
-                                        <Button
+                                        {/* <Button
                                             mode="text"
                                             labelStyle={{ color: 'grey' }}
                                             onPress={() => {
@@ -150,7 +150,7 @@ const CreateNewTransactionPage = () => {
                                             }}
                                         >
                                             Cancel
-                                        </Button>
+                                        </Button> */}
                                     </View>
                                     <View style={{ flex: 3 }} />
                                     <View style={{ flex: 2 }}>
@@ -166,39 +166,39 @@ const CreateNewTransactionPage = () => {
                                         </Button>
                                     </View>
                                 </View>
-                                <ScrollView style={{width: '95%'}}>
+                                <ScrollView style={{ width: '95%' }}>
 
-                                {categories.map((category, index) => (
-                                    <TouchableOpacity key={index} style={styles.categorySelection} onPress={() => {
-                                        let currentSelectedCategories = selectedCategories;
+                                    {categories.map((category, index) => (
+                                        <TouchableOpacity key={index} style={styles.categorySelection} onPress={() => {
+                                            let currentSelectedCategories = selectedCategories;
 
-                                        if (selectedCategories.includes(category)) {
-                                            currentSelectedCategories = currentSelectedCategories.filter(checked => checked !== category)
-                                            setSelectedCategories(currentSelectedCategories)
+                                            if (selectedCategories.includes(category)) {
+                                                currentSelectedCategories = currentSelectedCategories.filter(checked => checked !== category)
+                                                setSelectedCategories(currentSelectedCategories)
 
-                                        } else {
-                                            currentSelectedCategories.push(category);
-                                            currentSelectedCategories = currentSelectedCategories.filter(checked => checked !== category || checked === category)
-                                            setSelectedCategories(currentSelectedCategories);
-                                        }
+                                            } else {
+                                                currentSelectedCategories.push(category);
+                                                currentSelectedCategories = currentSelectedCategories.filter(checked => checked !== category || checked === category)
+                                                setSelectedCategories(currentSelectedCategories);
+                                            }
+                                        }}>
+                                            {selectedCategories.includes(category) ? (
+                                                <Ionicons name="checkmark" size={20} style={{ color: 'green', marginRight: 8 }} />
+                                            ) :
+                                                <></>
+                                            }
+                                            <Text style={{ fontSize: 16 }}>{category}</Text>
+                                        </TouchableOpacity>
+                                    ))}
+                                    <TouchableOpacity style={[styles.categorySelection, { borderBottomWidth: 0, justifyContent: 'center' }]} onPress={() => {
+                                        console.log("Implement this")
                                     }}>
-                                        {selectedCategories.includes(category) ? (
-                                            <Ionicons name="checkmark" size={20} style={{color: 'green', marginRight: 8}}/>
-                                        ) :
-                                        <></>
-                                        }
-                                        <Text style={{fontSize: 16}}>{category}</Text>
+                                        <Entypo name="plus" size={20} style={{ color: '#A9A9A9', marginRight: 8 }}></Entypo>
+                                        <Text style={{ color: '#A9A9A9', fontSize: 16 }}>Create New Category</Text>
                                     </TouchableOpacity>
-                                ))}
-                                <TouchableOpacity style={[styles.categorySelection, {borderBottomWidth: 0, justifyContent: 'center'}]} onPress={() => {
-                                    console.log("Implement this")
-                                }}>
-                                    <Entypo name="plus" size={20} style={{color: '#A9A9A9', marginRight: 8}}></Entypo>
-                                    <Text style={{color: '#A9A9A9', fontSize: 16}}>Create New Category</Text>
-                                </TouchableOpacity>
-                                
+
                                 </ScrollView>
- 
+
                             </View>
                         </View>
 
@@ -301,18 +301,18 @@ const CreateNewTransactionPage = () => {
                                             let currentSelectedCategories = selectedCategories;
                                             currentSelectedCategories = currentSelectedCategories.filter(checked => checked !== category)
                                             setSelectedCategories(currentSelectedCategories)
-                                            }}>
-                                            <AntDesign name="close" size={20} style={{marginRight: 8}}/>
-                                            <Text style={{fontSize: 16}}>{category}</Text>
+                                        }}>
+                                            <AntDesign name="close" size={20} style={{ marginRight: 8 }} />
+                                            <Text style={{ fontSize: 16 }}>{category}</Text>
                                         </TouchableOpacity>
                                     ))}
-                                    
-                                    <TouchableOpacity style={[styles.selectedCategories, {borderColor: '#A9A9A9', flexBasis: '20%', justifyContent: 'center'}]} onPress={() => {
+
+                                    <TouchableOpacity style={[styles.selectedCategories, { borderColor: '#A9A9A9', flexBasis: '20%', justifyContent: 'center' }]} onPress={() => {
                                         setDateModalVisible(false);
                                         setCategoriesModalVisible(!categoriesModalVisible)
                                     }}>
-                                        <View style={{flexDirection: 'row'}}>
-                                            <Entypo name="plus" size={20} hidden={true} style={{color: '#A9A9A9'}} />
+                                        <View style={{ flexDirection: 'row' }}>
+                                            <Entypo name="plus" size={20} hidden={true} style={{ color: '#A9A9A9' }} />
                                         </View>
                                     </TouchableOpacity>
                                 </View>
@@ -450,20 +450,20 @@ const styles = StyleSheet.create({
         height: 400
     },
     categorySelection: {
-        borderBottomWidth: 1, 
-        borderColor: 'lightgrey', 
-        width: '100%', 
-        flex: 1, 
+        borderBottomWidth: 1,
+        borderColor: 'lightgrey',
+        width: '100%',
+        flex: 1,
         // justifyContent: 'center',
         paddingVertical: 16,
         flexDirection: 'row'
     },
     selectedCategories: {
-        borderWidth: 1, 
+        borderWidth: 1,
         padding: 4,
-        borderRadius: 8, 
-        marginHorizontal: 4, 
-        flexDirection: 'row', 
+        borderRadius: 8,
+        marginHorizontal: 4,
+        flexDirection: 'row',
         flexBasis: '45%',
         marginVertical: 8
     },

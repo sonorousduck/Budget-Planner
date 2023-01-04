@@ -109,7 +109,7 @@ const firebaseFunctions = (() => {
     addItem: () => {
 
     },
-    addTransaction: (amount, description, optionalDetails, expense, date, activeGroup) => {
+    addTransaction: (amount, description, optionalDetails, expense, date, selectedCategories, activeGroup) => {
       const transactionUUID = uuidv4();
       let currentMonth = date.getMonth() + 1;
 
@@ -119,10 +119,12 @@ const firebaseFunctions = (() => {
         description: description,
         optionalDetails: optionalDetails,
         expense: expense,
+        category: selectedCategories,
         uuid: transactionUUID,
         timestamp: new Date().getTime()
       });
     },
+
     addIncome: (amount, date) => {
       const incomeUUID = uuidv4();
       set(ref(database, 'transactions/' + activeGroup + '/income/' + date.getYear() + '/' + date.getMonth() + 1 + '/' + incomeUUID), {
@@ -204,7 +206,7 @@ const firebaseFunctions = (() => {
       remove(ref(database, 'transactions/' + email + '/' + year + '/' + currentMonth + '/' + uuid))
     },
 
-    updateTransaction: (email, description, expense, amount, date, optionalDetails, uuid) => {
+    updateTransaction: (email, description, expense, amount, date, optionalDetails, selectedCategories, uuid) => {
       // email = email.substring(0, email.indexOf('.'));
       let incomingDate = new Date(date);
       let currentMonth = incomingDate.getMonth() + 1;
@@ -216,6 +218,7 @@ const firebaseFunctions = (() => {
         expense: expense,
         date: date,
         optionalDetails: optionalDetails,
+        category: selectedCategories,
         uuid: uuid
       }
 
@@ -262,7 +265,7 @@ const firebaseFunctions = (() => {
         }
 
         const categoriesRef = query(ref(database, `/users/${email}/categories`), orderByKey());
-        onValue(categoriesRef,  (snapshot) => {
+        onValue(categoriesRef, (snapshot) => {
           const data = snapshot.val();
           setCategories(Object.keys(data));
           console.log(Object.keys(data))
