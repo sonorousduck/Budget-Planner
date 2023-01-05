@@ -77,6 +77,7 @@ const firebaseFunctions = (() => {
               Insurance: true,
               Donations: true,
               Savings: true,
+              Income: true,
             },
             groups: {
               default: true

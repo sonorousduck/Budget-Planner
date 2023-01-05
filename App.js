@@ -57,9 +57,15 @@ const NavContainer = () => {
   const Homestack = () => {
     return (
       <Stack.Navigator initialRouteName='HomeScreen'>
-        <Stack.Screen name="HomeScreen" component={HomePage} options={{ headerShown: false }} />
-        <Stack.Screen name="Transaction" component={TransactionPage} options={{ headerShown: false }} />
-        <Stack.Screen name="CreateNewTransaction" component={CreateNewTransactionPage} options={{ headerShown: false }} />
+        <Stack.Group>
+          <Stack.Screen name="HomeScreen" component={HomePage} options={{ headerShown: false }} />
+          <Stack.Screen name="Transaction" component={TransactionPage} options={{ headerShown: false }} />
+          <Stack.Screen name="CreateNewTransaction" component={CreateNewTransactionPage} options={{ headerShown: false }} />
+        </Stack.Group>
+        {/* <Stack.Group>
+          <Stack.Screen name="BudgetDetailsPage" component={BudgetDetailsPage} options={{ headerShown: false }} />
+          <Stack.Screen name="CreateNewBudgetPage" component={CreateNewBudgetPage} options={{ headerShown: false }} />
+        </Stack.Group> */}
       </Stack.Navigator>
     )
   }

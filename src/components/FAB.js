@@ -2,6 +2,8 @@ import React from "react";
 import { FloatingAction } from "react-native-floating-action";
 import { useNavigation } from "@react-navigation/native";
 import { FontAwesome } from '@expo/vector-icons';
+import CreateNewBudgetPage from "../views/CreateNewBudgetPage";
+import BudgetPage from "../views/BudgetPage";
 
 const FAB = () => {
   const actions = [
@@ -28,7 +30,7 @@ const FAB = () => {
         if (name === "CreateNewTransaction") {
           navigation.navigate("CreateNewTransaction")
         } else if (name === "CreateNewBudget") {
-          navigation.navigate("CreateNewBudgetPage")
+          navigation.navigate("CreateNewBudgetPage", {screen: 'BudgetPage', initial: false})
         }
       }} />
   );
