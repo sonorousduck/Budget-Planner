@@ -28,7 +28,7 @@ const CreateNewBudgetPage = () => {
     const [dateModalVisible, setDateModalVisible] = useState(false);
     const [calendarSelected, setCalendarSelected] = useState(null);
     const [isMonthly, setIsMonthly] = useState(true);
-    const 
+    // const 
 
 
     useEffect(() => {
