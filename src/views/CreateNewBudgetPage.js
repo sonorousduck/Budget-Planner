@@ -4,7 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import useFirebase from "../hooks/Firebase"
 import { Button } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
-import { FontAwesome, Entypo, AntDesign, Ionicons } from '@expo/vector-icons';
+import { FontAwesome, Entypo, AntDesign, Ionicons, Fontisto } from '@expo/vector-icons';
 import CalendarPicker from 'react-native-calendar-picker';
 
 
@@ -12,7 +12,8 @@ const CreateNewBudgetPage = () => {
 
     const { firebase, signedIn, setSignedIn, currentUser, setCurrentUser, currentGroup, setCurrentGroup } = useFirebase();
     const [description, setDescription] = useState("");
-    const [amount, setAmount] = useState(0.00)
+    const [amount, setAmount] = useState([0.00])
+    const [monthAmount, setMonthAmount] = useState(0);
     const [dateTime, setDateTime] = useState(new Date())
     const [dateTimePretty, setDateTimePretty] = useState(new Date().toDateString())
     const [categories, setCategories] = useState([])
@@ -28,8 +29,8 @@ const CreateNewBudgetPage = () => {
     const [dateModalVisible, setDateModalVisible] = useState(false);
     const [calendarSelected, setCalendarSelected] = useState(null);
     const [isMonthly, setIsMonthly] = useState(true);
-    // const 
-
+    const [numberOfWeeks, setNumberOfWeeks] = useState(0);
+    const [isRecurring, setIsRecurring] = useState(false);
 
     useEffect(() => {
         if (isFirstRender.current) {
@@ -43,13 +44,30 @@ const CreateNewBudgetPage = () => {
     useEffect(() => {
         if (isFirstRender.current) {
             isFirstRender.current = false;
+            setAmount([0.00]);
+            console.log(amount[0])
             firebase.getCategories(currentUser, currentGroup, setCategories);
+            setNumberOfWeeks(weekCount(dateTime.getFullYear(), dateTime.getMonth()));
             return;
         }
         if (!changed) {
             setChanged(true);
         }
     }, [description, amount, optionalDetails, categories])
+
+    useEffect(() => {
+        setNumberOfWeeks(weekCount(dateTime.getFullYear(), dateTime.getMonth()));
+        let tempAmount = []
+        for (let i = 0; i < numberOfWeeks; i++)
+        {
+            if (i < amount.length) {
+                tempAmount.push(amount[i])
+            } else {
+                tempAmount.push(0.00);
+            }
+        }
+        setAmount(tempAmount);
+    }, [dateTime])
 
 
     const weekCount = (year, month_number) => {
@@ -241,7 +259,6 @@ const CreateNewBudgetPage = () => {
                         {optionalDetails != "" ?
                             (
                                 <View style={{ flexDirection: 'row', marginTop: 16, marginLeft: 16 }}>
-
                                     <TextInput
                                         multiline={true}
                                         value={optionalDetails}
@@ -277,9 +294,22 @@ const CreateNewBudgetPage = () => {
                             <Text style={{ marginLeft: 16, marginTop: 16, fontSize: 16, fontWeight: 'bold' }}>Amount</Text>
                             <Button mode="text" style={{ marginTop: 6, marginLeft: 16 }} labelStyle={{}} onPress={() => {
                                 setIsMonthly(!isMonthly);
+                                let tempAmount = amount;
+                                if (isMonthly) {
+                                    for (let i = 1; i < tempAmount.length; i++) {
+                                        tempAmount[0] += tempAmount[i];
+                                        tempAmount[i] = 0; 
+                                    }
+                                }
+                                else {
+                                    for (let i = 1; i < tempAmount.length; i++)
+                                    {
+                                        tempAmount[i] /= tempAmount[0] / tempAmount.length;
+                                    }
+                                }
+                                setAmount(tempAmount);
                             }}>{isMonthly ? (<Text style={{ fontWeight: 'bold' }}> (Monthly)</Text>) : (<Text style={{ fontWeight: 'bold' }}>(Weekly)</Text>)}</Button>
                         </View>
-                        {/* <View style={{ flexDirection: 'row', marginTop: 16, marginLeft: 16, backgroundColor: '#c0c0c0', borderRadius: 4, marginRight: 16 }}> */}
                             {isMonthly ? (
                                 <View style={{ flexDirection: 'row', marginTop: 16, marginLeft: 16, backgroundColor: '#c0c0c0', borderRadius: 4, marginRight: 16 }}>
                                     <Button
@@ -296,25 +326,66 @@ const CreateNewBudgetPage = () => {
                                     <TextInput
                                         style={[styles.input]}
                                         multiline={true}
-                                        value={"" + amount}
+                                        value={amount[0].toString()}
                                         onChangeText={
-                                            (amount) => setAmount(amount)
+                                            (newAmount) => {
+                                                let tempAmount = amount;
+                                                tempAmount[0] = parseInt(newAmount);
+                                                setAmount(tempAmount);
+                                            }
                                         }
                                         keyboardType="numeric"
                                     ></TextInput>
                                 </View>
                             ) :
-                            (
-                                <></>
+                            (amount.map((value, index) => {
+                                    <View key={index} style={{ flexDirection: 'row', marginTop: 16, marginLeft: 16, backgroundColor: '#c0c0c0', borderRadius: 4, marginRight: 16 }}>
+                                    <Button
+                                        mode="text"
+                                        style={{ marginTop: 4 }}
+                                        labelStyle={{ fontSize: 16, lineHeight: 18 }}
+                                        onPress={() => {
+                                            setPercentage(!percentage);
+                                        }}
+                                    >
+                                        {percent}
+                                    </Button>
+                                    <View style={{ width: 1, backgroundColor: '#909090', marginRight: 8, alignItems: 'center' }} />
+                                    <TextInput
+                                        style={[styles.input]}
+                                        multiline={true}
+                                        value={"" + value}
+                                        onChangeText={
+                                            (newAmount) => {
+                                                let tempAmount = amount;
+                                                tempAmount[index] = newAmount;
+                                                setAmount(tempAmount);
+                                            }
+                                        }
+                                        keyboardType="numeric"
+                                    ></TextInput>
+                                </View>
+                                })
+                            )}
+
+                        <View style={{flexDirection: 'row', marginTop: 8, marginLeft: 8}}>
+                            <Button
+                                mode="text"
+                                onPress={() => {
+                                    setIsRecurring(!isRecurring);
+                                }}
+                                >
+                                    {isRecurring ? (<Fontisto name="checkbox-active" size={16}/>) : (<Fontisto name="checkbox-passive" size={16}/>)}
+                                    {/* checkbox-active */}
+                                    
+
+                                </Button>
+                                <Text style={{fontSize: 16, justifyContent: 'center', lineHeight: 39}}>Recurring</Text>
+
+                        </View>
+   
 
 
-
-                            )
-
-
-                            }
-
-                        {/* </View> */}
 
                         <Text style={{ marginLeft: 16, marginTop: 16, fontSize: 16, fontWeight: 'bold' }}>Catgeories Associated with this Budget Item</Text>
                         {selectedCategories.length ? (
