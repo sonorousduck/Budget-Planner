@@ -12,8 +12,8 @@ const CreateNewBudgetPage = () => {
 
     const { firebase, signedIn, setSignedIn, currentUser, setCurrentUser, currentGroup, setCurrentGroup } = useFirebase();
     const [description, setDescription] = useState("");
-    const [amount, setAmount] = useState([0.00])
-    const [monthAmount, setMonthAmount] = useState(0);
+    const [amount, setAmount] = useState(0)
+    // const [monthAmount, setMonthAmount] = useState(0.00);
     const [dateTime, setDateTime] = useState(new Date())
     const [dateTimePretty, setDateTimePretty] = useState(new Date().toDateString())
     const [categories, setCategories] = useState([])
@@ -41,13 +41,19 @@ const CreateNewBudgetPage = () => {
 
     }, [percentage])
 
+    // useEffect(() => {
+    //     console.log("Setting amount")
+    //     setMonthAmount(amount[0] ?? 0);
+    //     console.log(monthAmount)
+
+    // }, [amount])
+
     useEffect(() => {
         if (isFirstRender.current) {
             isFirstRender.current = false;
-            setAmount([0.00]);
-            console.log(amount[0])
+            setAmount(0.00);
             firebase.getCategories(currentUser, currentGroup, setCategories);
-            setNumberOfWeeks(weekCount(dateTime.getFullYear(), dateTime.getMonth()));
+            // setNumberOfWeeks(weekCount(dateTime.getFullYear(), dateTime.getMonth()));
             return;
         }
         if (!changed) {
@@ -55,29 +61,29 @@ const CreateNewBudgetPage = () => {
         }
     }, [description, amount, optionalDetails, categories])
 
-    useEffect(() => {
-        setNumberOfWeeks(weekCount(dateTime.getFullYear(), dateTime.getMonth()));
-        let tempAmount = []
-        for (let i = 0; i < numberOfWeeks; i++)
-        {
-            if (i < amount.length) {
-                tempAmount.push(amount[i])
-            } else {
-                tempAmount.push(0.00);
-            }
-        }
-        setAmount(tempAmount);
-    }, [dateTime])
+    // useEffect(() => {
+    //     // setNumberOfWeeks(weekCount(dateTime.getFullYear(), dateTime.getMonth()));
+    //     // let tempAmount = []
+    //     // for (let i = 0; i < numberOfWeeks; i++)
+    //     // {
+    //     //     if (i < amount.length) {
+    //     //         tempAmount.push(amount[i])
+    //     //     } else {
+    //     //         tempAmount.push(0.00);
+    //     //     }
+    //     // }
+    //     // setAmount(tempAmount);
+    // }, [dateTime])
 
 
-    const weekCount = (year, month_number) => {
-        let firstOfMonth = new Date(year, month_number - 1, 1);
-        let lastOfMonth = new Date(year, month_number, 0);
+    // const weekCount = (year, month_number) => {
+    //     let firstOfMonth = new Date(year, month_number - 1, 1);
+    //     let lastOfMonth = new Date(year, month_number, 0);
 
-        let used = firstOfMonth.getDay() + lastOfMonth.getDate();
+    //     let used = firstOfMonth.getDay() + lastOfMonth.getDate();
         
-        return Math.ceil(used / 7);
-    }
+    //     return Math.ceil(used / 7);
+    // }
 
 
     const goBack = () => {
@@ -89,7 +95,7 @@ const CreateNewBudgetPage = () => {
             console.log("TODO: Incomplete Error Returning! Return a message to the user")
             return;
         }
-        // firebase.addBudgetItem(amount, description, optionalDetails, expense, dateTime, selectedCategories, currentGroup)
+        firebase.addBudgetItem(amount, description, optionalDetails, dateTime, percentage, isRecurring, selectedCategories, currentGroup)
         goBack();
     }
 
@@ -292,7 +298,7 @@ const CreateNewBudgetPage = () => {
 
                         <View style={{ flexDirection: 'row' }}>
                             <Text style={{ marginLeft: 16, marginTop: 16, fontSize: 16, fontWeight: 'bold' }}>Amount</Text>
-                            <Button mode="text" style={{ marginTop: 6, marginLeft: 16 }} labelStyle={{}} onPress={() => {
+                            {/* <Button mode="text" style={{ marginTop: 6, marginLeft: 16 }} labelStyle={{}} onPress={() => {
                                 setIsMonthly(!isMonthly);
                                 let tempAmount = amount;
                                 if (isMonthly) {
@@ -308,9 +314,10 @@ const CreateNewBudgetPage = () => {
                                     }
                                 }
                                 setAmount(tempAmount);
-                            }}>{isMonthly ? (<Text style={{ fontWeight: 'bold' }}> (Monthly)</Text>) : (<Text style={{ fontWeight: 'bold' }}>(Weekly)</Text>)}</Button>
+                            }}> */}
+                                {/* {isMonthly ? (<Text style={{ fontWeight: 'bold' }}> (Monthly)</Text>) : (<Text style={{ fontWeight: 'bold' }}>(Weekly)</Text>)}</Button> */}
                         </View>
-                            {isMonthly ? (
+                            {/* {isMonthly ? ( */}
                                 <View style={{ flexDirection: 'row', marginTop: 16, marginLeft: 16, backgroundColor: '#c0c0c0', borderRadius: 4, marginRight: 16 }}>
                                     <Button
                                         mode="text"
@@ -326,47 +333,49 @@ const CreateNewBudgetPage = () => {
                                     <TextInput
                                         style={[styles.input]}
                                         multiline={true}
-                                        value={amount[0].toString()}
+                                        value={`${amount}`}
                                         onChangeText={
-                                            (newAmount) => {
-                                                let tempAmount = amount;
-                                                tempAmount[0] = parseInt(newAmount);
-                                                setAmount(tempAmount);
+                                            (amount) => {
+                                                // let tempAmount = amount;
+                                                // tempAmount[0] = parseInt(newAmount);
+                                                setAmount(amount);
                                             }
                                         }
                                         keyboardType="numeric"
                                     ></TextInput>
                                 </View>
-                            ) :
-                            (amount.map((value, index) => {
-                                    <View key={index} style={{ flexDirection: 'row', marginTop: 16, marginLeft: 16, backgroundColor: '#c0c0c0', borderRadius: 4, marginRight: 16 }}>
-                                    <Button
-                                        mode="text"
-                                        style={{ marginTop: 4 }}
-                                        labelStyle={{ fontSize: 16, lineHeight: 18 }}
-                                        onPress={() => {
-                                            setPercentage(!percentage);
-                                        }}
-                                    >
-                                        {percent}
-                                    </Button>
-                                    <View style={{ width: 1, backgroundColor: '#909090', marginRight: 8, alignItems: 'center' }} />
-                                    <TextInput
-                                        style={[styles.input]}
-                                        multiline={true}
-                                        value={"" + value}
-                                        onChangeText={
-                                            (newAmount) => {
-                                                let tempAmount = amount;
-                                                tempAmount[index] = newAmount;
-                                                setAmount(tempAmount);
-                                            }
-                                        }
-                                        keyboardType="numeric"
-                                    ></TextInput>
-                                </View>
-                                })
-                            )}
+                            {/* ) : */}
+                            
+                            {/*} (amount.map((value, index) => {
+                            //         <View key={index} style={{ flexDirection: 'row', marginTop: 16, marginLeft: 16, backgroundColor: '#c0c0c0', borderRadius: 4, marginRight: 16 }}>
+                            //         <Button
+                            //             mode="text"
+                            //             style={{ marginTop: 4 }}
+                            //             labelStyle={{ fontSize: 16, lineHeight: 18 }}
+                            //             onPress={() => {
+                            //                 setPercentage(!percentage);
+                            //             }}
+                            //         >
+                            //             {percent}
+                            //         </Button>
+                            //         <View style={{ width: 1, backgroundColor: '#909090', marginRight: 8, alignItems: 'center' }} />
+                            //         <TextInput
+                            //             style={[styles.input]}
+                            //             multiline={true}
+                            //             value={"" + value}
+                            //             onChangeText={
+                            //                 (newAmount) => {
+                            //                     let tempAmount = amount;
+                            //                     tempAmount[index] = newAmount;
+                            //                     setAmount(tempAmount);
+                            //                 }
+                            //             }
+                            //             keyboardType="numeric"
+                            //         ></TextInput>
+                            //     </View>
+                            //     })
+                            // )}
+                            */}
 
                         <View style={{flexDirection: 'row', marginTop: 8, marginLeft: 8}}>
                             <Button
@@ -430,7 +439,7 @@ const CreateNewBudgetPage = () => {
                             mode="contained"
                             style={styles.saveButton}
                             onPress={() => {
-                                addTransaction();
+                                addBudgetItem();
                             }}
                             icon="content-save"
                         >Save Budget Item</Button>

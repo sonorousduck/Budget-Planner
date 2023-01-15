@@ -126,6 +126,38 @@ const firebaseFunctions = (() => {
       });
     },
 
+    addBudgetItem: (amount, description, optionalDetails, date, percentage, recurring, selectedCategories, activeGroup) => {
+      const budgetUUID = uuidv4();
+      let currentMonth = date.getMonth() + 1;
+
+      set(ref(database, 'budget/' + activeGroup + '/' + date.getFullYear() + '/' + currentMonth + '/' + budgetUUID), {
+        amount: amount,
+        date: date.getTime(),
+        description: description,
+        optionalDetails: optionalDetails,
+        category: selectedCategories,
+        uuid: budgetUUID,
+        isPercentage: percentage,
+        isRecurring: recurring,
+        timestamp: new Date().getTime()
+      });
+
+      if (recurring) {
+        set(ref(database, 'budget/' + activeGroup + '/' + 'recurring/' + budgetUUID), {
+          amount: amount,
+          date: date.getTime(),
+          description: description,
+          optionalDetails: optionalDetails,
+          category: selectedCategories,
+          uuid: budgetUUID,
+          isPercentage: percentage,
+          isRecurring: recurring,
+          timestamp: new Date().getTime()
+        });
+      }
+
+    },
+
     addIncome: (amount, date) => {
       const incomeUUID = uuidv4();
       set(ref(database, 'transactions/' + activeGroup + '/income/' + date.getYear() + '/' + date.getMonth() + 1 + '/' + incomeUUID), {
