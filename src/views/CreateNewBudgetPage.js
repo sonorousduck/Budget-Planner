@@ -6,7 +6,7 @@ import { Button } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import { FontAwesome, Entypo, AntDesign, Ionicons, Fontisto } from '@expo/vector-icons';
 import CalendarPicker from 'react-native-calendar-picker';
-
+import MonthPicker from "../components/MonthPicker";
 
 const CreateNewBudgetPage = () => {
 
@@ -30,6 +30,8 @@ const CreateNewBudgetPage = () => {
     const [calendarSelected, setCalendarSelected] = useState(null);
     const [isMonthly, setIsMonthly] = useState(true);
     const [numberOfWeeks, setNumberOfWeeks] = useState(0);
+    const [selectedMonth, setSelectedMonth] = useState(1);
+    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
     const [isRecurring, setIsRecurring] = useState(false);
 
     useEffect(() => {
@@ -175,12 +177,14 @@ const CreateNewBudgetPage = () => {
                                             </Button>
                                         </View>
                                     </View>
-                                    <CalendarPicker
+                                    {/* <CalendarPicker
                                         onDateChange={(date) => {
                                             setCalendarSelected(date)
                                         }}
                                         initialDate={dateTime}
-                                    />
+                                    /> */}
+                                    <MonthPicker selectedMonth={selectedMonth} setSelectedMonth={setSelectedMonth} selectedYear={selectedYear} setSelectedYear={setSelectedYear}/>
+                                    {/* <Text>{selectedMonth} {selectedYear}</Text> */}
 
                                 </View>
 
