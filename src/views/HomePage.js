@@ -9,7 +9,6 @@ import ExpenditureGraph from "../components/ExpenditureGraph";
 import Transaction from "../components/Transaction";
 
 
-
 const HomePage = ({ navigation }) => {
 
   const { firebase, signedIn, setSignedIn, currentUser, setCurrentUser, currentGroup, setCurrentGroup, currentTransactions, setCurrentTransactions } = useFirebase();
@@ -45,6 +44,7 @@ const HomePage = ({ navigation }) => {
             <Transaction key={index} props={transaction} email={currentGroup} />
           ))}
         </ScrollView>
+
 
       </View>
 

@@ -43,18 +43,32 @@ const CreateNewBudgetPage = () => {
 
     }, [percentage])
 
-    // useEffect(() => {
-    //     console.log("Setting amount")
-    //     setMonthAmount(amount[0] ?? 0);
-    //     console.log(monthAmount)
 
-    // }, [amount])
+    useEffect(() => {
+        if (!isFirstRender.current) {
+            setDateTime(new Date(selectedYear, selectedMonth - 1, 1)); // Just set it to the first of the month
+
+            let tempDate = new Date(selectedYear, selectedMonth - 1, 1)
+            let month = tempDate.toLocaleString('default', {month: 'long'});
+            let year = tempDate.getFullYear();
+            setDateTimePretty(`${month} ${year}`);
+        }
+        return;
+    }, [selectedMonth, selectedYear])
+
 
     useEffect(() => {
         if (isFirstRender.current) {
             isFirstRender.current = false;
             setAmount(0.00);
             firebase.getCategories(currentUser, currentGroup, setCategories);
+
+            let date = new Date();
+            let month = date.toLocaleString('default', {month: 'long'});
+            let year = date.getFullYear();
+
+            setDateTimePretty(`${month} ${year}`);
+
             // setNumberOfWeeks(weekCount(dateTime.getFullYear(), dateTime.getMonth()));
             return;
         }
@@ -62,6 +76,8 @@ const CreateNewBudgetPage = () => {
             setChanged(true);
         }
     }, [description, amount, optionalDetails, categories])
+
+
 
     // useEffect(() => {
     //     // setNumberOfWeeks(weekCount(dateTime.getFullYear(), dateTime.getMonth()));
@@ -177,15 +193,7 @@ const CreateNewBudgetPage = () => {
                                             </Button>
                                         </View>
                                     </View>
-                                    {/* <CalendarPicker
-                                        onDateChange={(date) => {
-                                            setCalendarSelected(date)
-                                        }}
-                                        initialDate={dateTime}
-                                    /> */}
                                     <MonthPicker selectedMonth={selectedMonth} setSelectedMonth={setSelectedMonth} selectedYear={selectedYear} setSelectedYear={setSelectedYear}/>
-                                    {/* <Text>{selectedMonth} {selectedYear}</Text> */}
-
                                 </View>
 
                             </View>
@@ -415,11 +423,11 @@ const CreateNewBudgetPage = () => {
                                         </TouchableOpacity>
                                     ))}
 
-                                    <TouchableOpacity style={[styles.selectedCategories, { borderColor: '#A9A9A9', flexBasis: '20%', justifyContent: 'center' }]} onPress={() => {
+                                    <TouchableOpacity style={[styles.selectedCategories, { borderColor: 'black', flexBasis: '20%', justifyContent: 'center' }]} onPress={() => {
                                         setCategoriesModalVisible(!categoriesModalVisible)
                                     }}>
                                         <View style={{ flexDirection: 'row' }}>
-                                            <Entypo name="plus" size={20} hidden={true} style={{ color: '#A9A9A9' }} />
+                                            <Entypo name="plus" size={20} hidden={true} style={{ color: 'black' }} />
                                         </View>
                                     </TouchableOpacity>
                                 </View>

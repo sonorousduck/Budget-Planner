@@ -8,7 +8,18 @@ import { Button } from "react-native-paper";
 
 const BudgetPage = () => {
 
-    const { firebase, signedIn, setSignedIn, currentUser, setCurrentUser, currentGroup, setCurrentGroup } = useFirebase();
+    const { firebase, signedIn, setSignedIn, currentUser, setCurrentUser, currentGroup, setCurrentGroup, currentBudgets, setCurrentBudgets } = useFirebase();
+    const [localCurrentBudgets, setLocalCurrentBudgets] = useState([])
+
+
+    useEffect(() => {
+        if (!currentTransactions) {
+          firebase.getCurrentMonthTransactions(currentGroup, currentTransactions, setCurrentTransactions, currentUser);
+        }
+        if (currentTransactions && currentTransactions.length) {
+          setLocalCurrentBudgets(currentTransactions);
+        }
+      }, [currentTransactions])
 
     return (
         <SafeAreaView style={{ flex: 1, height: '100%' }} edges={['left', 'right', 'top']}>
@@ -20,7 +31,9 @@ const BudgetPage = () => {
 
             <View style={styles.otherPortion}>
                 <ScrollView style={{ height: '100%' }}>
-
+                {localCurrentBudgets.map((transaction, index) => (
+                    <Transaction key={index} props={transaction} email={currentGroup} />
+                ))}
 
                 </ScrollView>
 

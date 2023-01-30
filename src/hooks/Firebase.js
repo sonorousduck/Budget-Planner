@@ -200,6 +200,36 @@ const firebaseFunctions = (() => {
       })
     },
 
+    getCurrentBudgetAllocations: (activeGroup, setCurrentBudgets, currentUser) => {
+      if (activeGroup) {
+        let email = activeGroup;
+
+        if (activeGroup == "default") {
+          email = currentUser.email;
+        }
+
+        let date = new Date();
+      
+        let currentMonth = date.getMonth() + 1;
+        if (email.includes('.')) {
+          email = email.substring(0, email.indexOf('.'));
+        }
+        console.log("email from month transactions: ", email)
+
+        const budgetRef = query(ref(database, 'budget/' + email + '/' + date.getFullYear() + '/' + currentMonth), orderByChild('timestamp'));
+        onValue(budgetRef, (snapshot) => {
+          const dataArray = [];
+          snapshot.forEach((child) => {
+            dataArray.unshift(child.val())
+          })
+          setCurrentBudgets(dataArray);
+        });
+      }
+
+
+    },
+
+
     getCurrentMonthTransactions: (activeGroup, currentTransactions, setCurrentTransactions, currentUser) => {
       if (activeGroup) {
         let email = activeGroup;
@@ -325,6 +355,7 @@ export const FirebaseProvider = ({ children }) => {
   const [firebase] = useState(firebaseFunctions);
   const [currentGroup, setCurrentGroup] = useState(null);
   const [currentTransactions, setCurrentTransactions] = useState([]);
+  const [currentBudgets, setCurrentBudgets] = useState([]);
   const auth = getAuth();
 
   onAuthStateChanged(auth, (user) => {
@@ -345,6 +376,7 @@ export const FirebaseProvider = ({ children }) => {
   useEffect(() => {
     if (currentGroup) {
       firebase.getCurrentMonthTransactions(currentGroup, currentTransactions, setCurrentTransactions, currentUser)
+    
     }
   }, [currentGroup])
 
@@ -358,7 +390,9 @@ export const FirebaseProvider = ({ children }) => {
     currentGroup: currentGroup,
     setCurrentGroup: setCurrentGroup,
     currentTransactions: currentTransactions,
-    setCurrentTransactions, setCurrentTransactions
+    setCurrentTransactions, setCurrentTransactions,
+    currentBudgets: currentBudgets,
+    setCurrentBudgets: setCurrentBudgets
   }
 
   return (
