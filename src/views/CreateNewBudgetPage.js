@@ -113,6 +113,7 @@ const CreateNewBudgetPage = () => {
             console.log("TODO: Incomplete Error Returning! Return a message to the user")
             return;
         }
+        console.log(currentGroup)
         firebase.addBudgetItem(amount, description, optionalDetails, dateTime, percentage, isRecurring, selectedCategories, currentGroup)
         goBack();
     }

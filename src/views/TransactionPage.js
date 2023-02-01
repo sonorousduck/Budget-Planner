@@ -14,7 +14,6 @@ const TransactionPage = ({ route, navigation }) => {
 
   const { firebase, signedIn, setSignedIn, currentUser, setCurrentUser, currentGroup } = useFirebase();
   const props = route.params.props.props;
-  console.log(route)
   const email = route.params.props.email;
   const [description, setDescription] = useState(props.description);
   const [dateTime, setDateTime] = useState(new Date(props.date))
@@ -74,7 +73,6 @@ const TransactionPage = ({ route, navigation }) => {
       return;
     }
     if (!changed) {
-      console.log("Something was updated!")
       setChanged(true);
     }
   }, [description, amount, dateTime, optionalDetails, selectedCategories])
@@ -89,8 +87,6 @@ const TransactionPage = ({ route, navigation }) => {
     setNegative(newNegative);
     setColor(newColor);
     setChanged(true);
-
-    console.log(`Expense After: ${expense}`)
 
   }, [expense])
 

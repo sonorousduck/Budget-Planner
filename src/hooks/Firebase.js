@@ -107,9 +107,7 @@ const firebaseFunctions = (() => {
       });
     },
 
-    addItem: () => {
 
-    },
     addTransaction: (amount, description, optionalDetails, expense, date, selectedCategories, activeGroup) => {
       const transactionUUID = uuidv4();
       let currentMonth = date.getMonth() + 1;
@@ -155,7 +153,25 @@ const firebaseFunctions = (() => {
           timestamp: new Date().getTime()
         });
       }
+    },
 
+    
+    updateBudget: (amount, description, optionalDetails, date, percentage, recurring, selectedCategories, activeGroup, uuid) => {
+      let incomingDate = new Date(date);
+      let currentMonth = incomingDate.getMonth() + 1;
+      let year = incomingDate.getFullYear();
+
+      const budget = {
+        amount: amount,
+        date: date.getTime(),
+        description: description,
+        optionalDetails: optionalDetails,
+        category: selectedCategories,
+        isPercentage: percentage,
+        isRecurring: recurring,
+      }
+
+      update(ref(database, 'budget/' + activeGroup + '/' + year + '/' + currentMonth + '/' + uuid), budget)
     },
 
     addIncome: (amount, date) => {
@@ -214,7 +230,7 @@ const firebaseFunctions = (() => {
         if (email.includes('.')) {
           email = email.substring(0, email.indexOf('.'));
         }
-        console.log("email from month transactions: ", email)
+        console.log("email from month budgets: ", email)
 
         const budgetRef = query(ref(database, 'budget/' + email + '/' + date.getFullYear() + '/' + currentMonth), orderByChild('timestamp'));
         onValue(budgetRef, (snapshot) => {
@@ -225,8 +241,6 @@ const firebaseFunctions = (() => {
           setCurrentBudgets(dataArray);
         });
       }
-
-
     },
 
 
@@ -288,12 +302,7 @@ const firebaseFunctions = (() => {
       update(ref(database, 'transactions/' + email + '/' + year + '/' + currentMonth + '/' + uuid), transaction)
     },
 
-    removeItem: () => {
 
-    },
-    updateItem: () => {
-
-    },
     getName: (email, setName) => {
       email = email.substring(0, email.indexOf('.'));
 
@@ -376,7 +385,7 @@ export const FirebaseProvider = ({ children }) => {
   useEffect(() => {
     if (currentGroup) {
       firebase.getCurrentMonthTransactions(currentGroup, currentTransactions, setCurrentTransactions, currentUser)
-    
+      firebase.getCurrentBudgetAllocations(currentGroup, setCurrentBudgets, currentUser)
     }
   }, [currentGroup])
 

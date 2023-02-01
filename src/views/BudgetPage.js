@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { View, Text, StyleSheet, ScrollView } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context";
 import useFirebase from "../hooks/Firebase"
 import { FloatingAction } from "react-native-floating-action";
 import FAB from "../components/FAB";
 import { Button } from "react-native-paper";
+import BudgetComponent from "../components/BudgetComponent";
 
 const BudgetPage = () => {
 
@@ -13,13 +14,14 @@ const BudgetPage = () => {
 
 
     useEffect(() => {
-        if (!currentTransactions) {
-          firebase.getCurrentMonthTransactions(currentGroup, currentTransactions, setCurrentTransactions, currentUser);
+        if (!currentBudgets) {
+          firebase.getCurrentBudgetAllocations(currentGroup, setCurrentBudgets, currentUser);
+          console.log("Getting current budgets")
         }
-        if (currentTransactions && currentTransactions.length) {
-          setLocalCurrentBudgets(currentTransactions);
+        if (currentBudgets && currentBudgets.length) {
+          setLocalCurrentBudgets(currentBudgets);
         }
-      }, [currentTransactions])
+      }, [currentBudgets])
 
     return (
         <SafeAreaView style={{ flex: 1, height: '100%' }} edges={['left', 'right', 'top']}>
@@ -31,8 +33,8 @@ const BudgetPage = () => {
 
             <View style={styles.otherPortion}>
                 <ScrollView style={{ height: '100%' }}>
-                {localCurrentBudgets.map((transaction, index) => (
-                    <Transaction key={index} props={transaction} email={currentGroup} />
+                {localCurrentBudgets.map((budget, index) => (
+                    <BudgetComponent key={index} props={budget} email={currentGroup} />
                 ))}
 
                 </ScrollView>
