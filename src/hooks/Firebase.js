@@ -170,8 +170,21 @@ const firebaseFunctions = (() => {
         isPercentage: percentage,
         isRecurring: recurring,
       }
-
       update(ref(database, 'budget/' + activeGroup + '/' + year + '/' + currentMonth + '/' + uuid), budget)
+    },
+
+    
+    deleteBudget: (email, dateTransaction, uuid) => {
+      if (email.includes(".")) {
+        email = email.substring(0, email.indexOf('.'));
+      }
+      let date = new Date(dateTransaction);
+      let currentMonth = date.getMonth() + 1;
+      let year = date.getFullYear();
+
+      console.log('budget/' + email + '/' + year + '/' + currentMonth + '/' + uuid);
+
+      remove(ref(database, 'budget/' + email + '/' + year + '/' + currentMonth + '/' + uuid))
     },
 
     addIncome: (amount, date) => {
@@ -276,7 +289,9 @@ const firebaseFunctions = (() => {
     },
 
     deleteTransaction: (email, dateTransaction, uuid) => {
-      email = email.substring(0, email.indexOf('.'));
+      if (email.includes(".")) {
+        email = email.substring(0, email.indexOf('.'));
+      }
       let date = new Date(dateTransaction);
       let currentMonth = date.getMonth() + 1;
       let year = date.getFullYear();

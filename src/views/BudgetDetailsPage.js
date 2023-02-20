@@ -12,6 +12,7 @@ const BudgetDetailsPage = ({ route, navigation }) => {
 
     const { firebase, signedIn, setSignedIn, currentUser, setCurrentUser, currentGroup, setCurrentGroup } = useFirebase();
     const props = route.params.props.props;
+    console.log(props)
     const email = route.params.props.email;
     const isVisible = useIsFocused();
 
@@ -36,6 +37,11 @@ const BudgetDetailsPage = ({ route, navigation }) => {
     const [isRecurring, setIsRecurring] = useState(props.isRecurring);
 
 
+    const goBack = () => {
+        navigation.goBack();
+    }
+
+
     const showConfirmDialog = () => {
         return Alert.alert(
             "Are you sure?",
@@ -44,8 +50,9 @@ const BudgetDetailsPage = ({ route, navigation }) => {
                 {
                     text: "Yes",
                     onPress: () => {
+                        console.log(props.uuid)
                         firebase.deleteBudget(email, props.date, props.uuid);
-                        navigation.goBack();
+                        goBack();
                     },
                 },
                 {
@@ -108,9 +115,6 @@ const BudgetDetailsPage = ({ route, navigation }) => {
         }
     }, [description, amount, optionalDetails, categories])
 
-    const goBack = () => {
-        navigation.goBack();
-    }
 
     const updateBudget = () => {
         if (amount == 0.0 || description == "") {
@@ -118,7 +122,7 @@ const BudgetDetailsPage = ({ route, navigation }) => {
             return;
         }
         console.log(currentGroup)
-        firebase.updateBudget(amount, description, optionalDetails, dateTime, percentage, isRecurring, selectedCategories, currentGroup)
+        firebase.updateBudget(amount, description, optionalDetails, dateTime, percentage, isRecurring, selectedCategories, currentGroup, props.uuid)
         goBack();
     }
 
