@@ -188,7 +188,6 @@ const firebaseFunctions = (() => {
     },
 
     addIncome: (amount, date) => {
-      const incomeUUID = uuidv4();
       set(ref(database, 'transactions/' + activeGroup + '/income/' + date.getYear() + '/' + date.getMonth() + 1 + '/' + incomeUUID), {
         amount: amount,
         date: date.getTime(),
