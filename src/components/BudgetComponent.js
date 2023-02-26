@@ -3,6 +3,7 @@ import { View, StyleSheet, Text, ScrollView} from "react-native"
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { Button } from "react-native-paper";
 import { useNavigation } from '@react-navigation/native';
+import { StackActions } from "@react-navigation/native";
 
 
 

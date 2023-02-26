@@ -7,12 +7,12 @@ import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { FontAwesome, Entypo, AntDesign, Ionicons, Fontisto } from '@expo/vector-icons';
 import CalendarPicker from 'react-native-calendar-picker';
 import MonthPicker from "../components/MonthPicker";
+import { StackActions } from "@react-navigation/native";
 
-const BudgetDetailsPage = ({route}) => {
+const BudgetDetailsPage = ({route, navigation}) => {
 
     const { firebase, signedIn, setSignedIn, currentUser, setCurrentUser, currentGroup, setCurrentGroup } = useFirebase();
     const props = route.params.props.props;
-    console.log(props)
     const email = route.params.props.email;
     const isVisible = useIsFocused();
 
@@ -27,7 +27,6 @@ const BudgetDetailsPage = ({route}) => {
     const [changed, setChanged] = useState(false);
     const [percentage, setPercentage] = useState(props.isPercentage);
     const [percent, setPercent] = useState(props.isPercentage ? "%" : "$");
-    const navigation = useNavigation();
     const isFirstRender = useRef(true);
     const [categoriesModalVisible, setCategoriesModalVisible] = useState(false);
     const [showPlus, setShowPlus] = useState(true);
@@ -47,6 +46,7 @@ const BudgetDetailsPage = ({route}) => {
                 {
                     text: "Yes",
                     onPress: () => {
+                        console.log(route.params.props)
                         console.log(props.uuid)
                         firebase.deleteBudget(email, props.date, props.uuid);
                         goBack();
@@ -113,7 +113,7 @@ const BudgetDetailsPage = ({route}) => {
     }, [description, amount, optionalDetails, categories])
 
     const goBack = () => {
-        navigation;
+        navigation.navigate("BudgetPage");
     }
 
     const updateBudget = () => {
@@ -122,6 +122,7 @@ const BudgetDetailsPage = ({route}) => {
             return;
         }
         console.log("Updating")
+        console.log(props.uuid)
         firebase.updateBudget(amount, description, optionalDetails, dateTime, percentage, isRecurring, selectedCategories, currentGroup, props.uuid)
         goBack();
     }

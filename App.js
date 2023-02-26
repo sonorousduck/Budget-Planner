@@ -87,13 +87,6 @@ const NavContainer = () => {
         <>
           <StatusBar style='auto' />
           <Tab.Navigator>
-          <Tab.Screen name="Budget" component={BudgetStack}
-              options={{
-                title: "Budget",
-                headerShown: false,
-                tabBarIcon: () => <FontAwesome5 name="money-bill-alt" size={20} color="black" />
-              }}
-            />
             <Tab.Screen name="Home" component={Homestack}
               options={{
                 title: 'Transactions',
@@ -101,6 +94,13 @@ const NavContainer = () => {
                 tabBarIcon: () => <FontAwesome5 name="dollar-sign" size={20} color="black" />
               }}
             />
+              <Tab.Screen name="Budget" component={BudgetStack}
+                  options={{
+                    title: "Budget",
+                    headerShown: false,
+                    tabBarIcon: () => <FontAwesome5 name="money-bill-alt" size={20} color="black" />
+                  }}
+                />
             <Tab.Screen name="Projects" component={ProjectsPage}
               options={{
                 title: "Projects",
