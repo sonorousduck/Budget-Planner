@@ -38,6 +38,7 @@ const BudgetDetailsPage = ({route}) => {
     const [isRecurring, setIsRecurring] = useState(props.isRecurring);
 
 
+
     const showConfirmDialog = () => {
         return Alert.alert(
             "Are you sure?",
@@ -46,8 +47,9 @@ const BudgetDetailsPage = ({route}) => {
                 {
                     text: "Yes",
                     onPress: () => {
+                        console.log(props.uuid)
                         firebase.deleteBudget(email, props.date, props.uuid);
-                        navigation.goBack();
+                        goBack();
                     },
                 },
                 {
