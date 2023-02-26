@@ -157,9 +157,9 @@ const firebaseFunctions = (() => {
 
     
     updateBudget: (amount, description, optionalDetails, date, percentage, recurring, selectedCategories, activeGroup, uuid) => {
-      let incomingDate = new Date(date);
-      let currentMonth = incomingDate.getMonth() + 1;
-      let year = incomingDate.getFullYear();
+      // let incomingDate = new Date(date);
+      let currentMonth = date.getMonth() + 1;
+      let year = date.getFullYear();
 
       const budget = {
         amount: amount,

@@ -8,8 +8,6 @@ import { useNavigation } from '@react-navigation/native';
 
 const BudgetComponent = (props) => {
     const navigation = useNavigation();
-    console.log(props.props.isPercentage)
-
     // const color = "red" ? props.props.expense : 'green';
     // const negative = "-" ? props.props.expense : '+';
     return (

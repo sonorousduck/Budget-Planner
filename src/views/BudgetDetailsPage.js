@@ -8,10 +8,11 @@ import { FontAwesome, Entypo, AntDesign, Ionicons, Fontisto } from '@expo/vector
 import CalendarPicker from 'react-native-calendar-picker';
 import MonthPicker from "../components/MonthPicker";
 
-const BudgetDetailsPage = ({ route, navigation }) => {
+const BudgetDetailsPage = ({route}) => {
 
     const { firebase, signedIn, setSignedIn, currentUser, setCurrentUser, currentGroup, setCurrentGroup } = useFirebase();
     const props = route.params.props.props;
+    console.log(props)
     const email = route.params.props.email;
     const isVisible = useIsFocused();
 
@@ -26,6 +27,7 @@ const BudgetDetailsPage = ({ route, navigation }) => {
     const [changed, setChanged] = useState(false);
     const [percentage, setPercentage] = useState(props.isPercentage);
     const [percent, setPercent] = useState(props.isPercentage ? "%" : "$");
+    const navigation = useNavigation();
     const isFirstRender = useRef(true);
     const [categoriesModalVisible, setCategoriesModalVisible] = useState(false);
     const [showPlus, setShowPlus] = useState(true);
@@ -109,7 +111,7 @@ const BudgetDetailsPage = ({ route, navigation }) => {
     }, [description, amount, optionalDetails, categories])
 
     const goBack = () => {
-        navigation.goBack();
+        navigation;
     }
 
     const updateBudget = () => {
@@ -117,8 +119,8 @@ const BudgetDetailsPage = ({ route, navigation }) => {
             console.log("TODO: Incomplete Error Returning! Return a message to the user")
             return;
         }
-        console.log(currentGroup)
-        firebase.updateBudget(amount, description, optionalDetails, dateTime, percentage, isRecurring, selectedCategories, currentGroup)
+        console.log("Updating")
+        firebase.updateBudget(amount, description, optionalDetails, dateTime, percentage, isRecurring, selectedCategories, currentGroup, props.uuid)
         goBack();
     }
 
