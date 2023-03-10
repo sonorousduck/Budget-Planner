@@ -45,7 +45,7 @@ const TransactionPage = ({ route, navigation }) => {
           text: "Yes",
           onPress: () => {
             firebase.deleteTransaction(email, props.date, props.uuid);
-            navigation.goBack();
+            goBack();
           },
         },
         {

@@ -13,6 +13,7 @@ const BudgetDetailsPage = ({route, navigation}) => {
 
     const { firebase, signedIn, setSignedIn, currentUser, setCurrentUser, currentGroup, setCurrentGroup } = useFirebase();
     const props = route.params.props.props;
+    console.log(props);
     const email = route.params.props.email;
     const isVisible = useIsFocused();
 
@@ -35,7 +36,7 @@ const BudgetDetailsPage = ({route, navigation}) => {
     const [selectedMonth, setSelectedMonth] = useState(new Date(props.date).getMonth());
     const [selectedYear, setSelectedYear] = useState(new Date(props.date).getFullYear());
     const [isRecurring, setIsRecurring] = useState(props.isRecurring);
-
+    const [deleted, setDeleted] = useState(false);
 
 
     const showConfirmDialog = () => {
@@ -46,9 +47,9 @@ const BudgetDetailsPage = ({route, navigation}) => {
                 {
                     text: "Yes",
                     onPress: () => {
-                        console.log(route.params.props)
-                        console.log(props.uuid)
                         firebase.deleteBudget(email, props.date, props.uuid);
+                        console.log("Deleting")
+                        setDeleted(true);
                         goBack();
                     },
                 },
@@ -73,7 +74,7 @@ const BudgetDetailsPage = ({route, navigation}) => {
         if (isFirstRender.current) {
           return;
         }
-        if (changed) {
+        if (changed && !deleted) {
           updateBudget();
         }
     
@@ -121,10 +122,13 @@ const BudgetDetailsPage = ({route, navigation}) => {
             console.log("TODO: Incomplete Error Returning! Return a message to the user")
             return;
         }
-        console.log("Updating")
-        console.log(props.uuid)
-        firebase.updateBudget(amount, description, optionalDetails, dateTime, percentage, isRecurring, selectedCategories, currentGroup, props.uuid)
-        goBack();
+        if (!deleted) {
+            console.log("Updating")
+            console.log(props.uuid)
+            firebase.updateBudget(amount, description, optionalDetails, dateTime, percentage, isRecurring, selectedCategories, currentGroup, props.uuid)
+            goBack();
+        }
+
     }
 
 
