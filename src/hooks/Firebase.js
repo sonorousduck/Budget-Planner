@@ -181,7 +181,8 @@ const firebaseFunctions = (() => {
       let date = new Date(dateTransaction);
       let currentMonth = date.getMonth() + 1;
       let year = date.getFullYear();
-
+      console.log("Deleting!")
+      console.log(uuid)
       console.log('budget/' + email + '/' + year + '/' + currentMonth + '/' + uuid);
 
       remove(ref(database, 'budget/' + email + '/' + year + '/' + currentMonth + '/' + uuid))
