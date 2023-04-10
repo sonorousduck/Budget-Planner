@@ -3,7 +3,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { initializeApp } from 'firebase/app';
 import { initializeAuth, getReactNativePersistence } from "firebase/auth";
 import { createContext, useContext, useMemo, useState } from 'react';
-import uuid from 'react-native-uuid';
+
 const FirebaseContext = createContext(null);
 
 // Optionally import the services that you want to use
@@ -97,7 +97,7 @@ const firebaseFunctions = (() => {
 
 
 
-    signOut: (setSignedIn) => {
+    signOut: (setSignedIn, auth) => {
       signOut(auth).then(() => {
         setSignedIn(false);
         console.log("Signing out")
@@ -415,7 +415,8 @@ export const FirebaseProvider = ({ children }) => {
     currentTransactions: currentTransactions,
     setCurrentTransactions, setCurrentTransactions,
     currentBudgets: currentBudgets,
-    setCurrentBudgets: setCurrentBudgets
+    setCurrentBudgets: setCurrentBudgets,
+    auth: auth
   }
 
   return (

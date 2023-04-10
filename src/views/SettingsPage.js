@@ -6,12 +6,12 @@ import useFirebase from "../hooks/Firebase"
 
 const SettingsPage = () => {
     
-    const { firebase, signedIn, setSignedIn, currentUser, setCurrentUser } = useFirebase();
+    const { firebase, signedIn, setSignedIn, currentUser, setCurrentUser, auth } = useFirebase();
 
     return (
         <SafeAreaView>
             <Text>Settings</Text>
-            <Button onPress={() => {firebase.signOut(setSignedIn)}}>
+            <Button onPress={() => {firebase.signOut(setSignedIn, auth)}}>
                 Sign out
             </Button>
         </SafeAreaView>
