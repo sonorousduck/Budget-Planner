@@ -3,6 +3,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { initializeApp } from 'firebase/app';
 import { initializeAuth, getReactNativePersistence } from "firebase/auth";
 import { createContext, useContext, useMemo, useState } from 'react';
+import { getFirestore, doc, setDoc, collection, addDoc, onSnapshot, where, query, enableIndexedDbPersistence, disableNetwork, enableNetwork, CACHE_SIZE_UNLIMITED, initializeFirestore, getDocFromCache, getDocsFromCache, getDocsFromServer, orderBy, getCountFrom } from "firebase/firestore";
 
 const FirebaseContext = createContext(null);
 
@@ -27,10 +28,24 @@ const firebaseConfig = {
 
 const firebaseFunctions = (() => {
   const app = initializeApp(firebaseConfig);
-  const database = getDatabase(app);
+  database = initializeFirestore(app, {cacheSizeBytes: CACHE_SIZE_UNLIMITED});
   const auth = initializeAuth(app, {
     persistence: getReactNativePersistence(AsyncStorage)
   })
+
+  enableIndexedDbPersistence(database).catch((err) => {
+    if (err.code == 'failed-precondition') {
+      console.log("Multiple tabs are open")
+      // Multiple tabs open, persistence can only be enabled
+      // in one tab at a a time.
+      // ...
+  } else if (err.code == 'unimplemented') {
+    console.log("Current browser does not support all the features.")
+      // The current browser does not support all of the
+      // features required to enable persistence
+      // ...
+  }});
+
   let currentUser = auth.currentUser;
   var activeGroup = currentUser;
 
@@ -45,7 +60,7 @@ const firebaseFunctions = (() => {
         .then((userCredential) => {
           // Signed in 
           currentUser = userCredential.user;
-          activeGroup = currentUser;
+          activeGroup = userCredential.user;
           setSignedIn(true);
         })
         .catch((error) => {
@@ -56,7 +71,6 @@ const firebaseFunctions = (() => {
     },
 
     createUser: (name, email, password) => {
-      console.log("create user called")
       createUserWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
           currentUser = userCredential.user;
@@ -108,84 +122,80 @@ const firebaseFunctions = (() => {
     },
 
 
-    addTransaction: (amount, description, optionalDetails, expense, date, selectedCategories, activeGroup) => {
-      const transactionUUID = uuidv4();
-      let currentMonth = date.getMonth() + 1;
+    addTransaction: async (amount, description, optionalDetails, expense, date, selectedCategories, activeGroup) => {
 
-      set(ref(database, 'transactions/' + activeGroup + '/' + date.getFullYear() + '/' + currentMonth + '/' + transactionUUID), {
+      const docRef = await addDoc(collection(database, `transactions/users/${activeGroup}`), {
         amount: amount,
         date: date.getTime(),
         description: description,
         optionalDetails: optionalDetails,
         expense: expense,
         category: selectedCategories,
-        uuid: transactionUUID,
         timestamp: new Date().getTime()
-      });
+      })
     },
 
-    addBudgetItem: (amount, description, optionalDetails, date, percentage, recurring, selectedCategories, activeGroup) => {
-      const budgetUUID = uuidv4();
-      let currentMonth = date.getMonth() + 1;
-
-      set(ref(database, 'budget/' + activeGroup + '/' + date.getFullYear() + '/' + currentMonth + '/' + budgetUUID), {
-        amount: amount,
-        date: date.getTime(),
-        description: description,
-        optionalDetails: optionalDetails,
-        category: selectedCategories,
-        uuid: budgetUUID,
-        isPercentage: percentage,
-        isRecurring: recurring,
-        timestamp: new Date().getTime()
-      });
-
-      if (recurring) {
-        set(ref(database, 'budget/' + activeGroup + '/' + 'recurring/' + budgetUUID), {
+    addBudgetItem: async (amount, description, optionalDetails, date, percentage, recurring, selectedCategories, activeGroup) => {
+      
+      if (!recurring){
+        const docRef = await addDoc(collection(database, `budget/users/${activeGroup}`), {
           amount: amount,
           date: date.getTime(),
           description: description,
           optionalDetails: optionalDetails,
           category: selectedCategories,
-          uuid: budgetUUID,
           isPercentage: percentage,
           isRecurring: recurring,
           timestamp: new Date().getTime()
-        });
+        })
+      } else {
+        const docRef = await addDoc(collection(database, `budget/users/${activeGroup}/recurring`), {
+          amount: amount,
+          date: date.getTime(),
+          description: description,
+          optionalDetails: optionalDetails,
+          category: selectedCategories,
+          isPercentage: percentage,
+          isRecurring: recurring,
+          timestamp: new Date().getTime()
+        })
       }
     },
 
     
     updateBudget: (amount, description, optionalDetails, date, percentage, recurring, selectedCategories, activeGroup, uuid) => {
+      console.log("Create this method")
       // let incomingDate = new Date(date);
-      let currentMonth = date.getMonth() + 1;
-      let year = date.getFullYear();
+      // let currentMonth = date.getMonth() + 1;
+      // let year = date.getFullYear();
 
-      const budget = {
-        amount: amount,
-        date: date.getTime(),
-        description: description,
-        optionalDetails: optionalDetails,
-        category: selectedCategories,
-        isPercentage: percentage,
-        isRecurring: recurring,
-      }
-      update(ref(database, 'budget/' + activeGroup + '/' + year + '/' + currentMonth + '/' + uuid), budget)
+      // const budget = {
+      //   amount: amount,
+      //   date: date.getTime(),
+      //   description: description,
+      //   optionalDetails: optionalDetails,
+      //   category: selectedCategories,
+      //   isPercentage: percentage,
+      //   isRecurring: recurring,
+      // }
+      // update(ref(database, 'budget/' + activeGroup + '/' + year + '/' + currentMonth + '/' + uuid), budget)
     },
 
     
     deleteBudget: (email, dateTransaction, uuid) => {
-      if (email.includes(".")) {
-        email = email.substring(0, email.indexOf('.'));
-      }
-      let date = new Date(dateTransaction);
-      let currentMonth = date.getMonth() + 1;
-      let year = date.getFullYear();
-      console.log("Deleting!")
-      console.log(uuid)
-      console.log('budget/' + email + '/' + year + '/' + currentMonth + '/' + uuid);
+      console.log("Create this method")
 
-      remove(ref(database, 'budget/' + email + '/' + year + '/' + currentMonth + '/' + uuid))
+      // if (email.includes(".")) {
+      //   email = email.substring(0, email.indexOf('.'));
+      // }
+      // let date = new Date(dateTransaction);
+      // let currentMonth = date.getMonth() + 1;
+      // let year = date.getFullYear();
+      // console.log("Deleting!")
+      // console.log(uuid)
+      // console.log('budget/' + email + '/' + year + '/' + currentMonth + '/' + uuid);
+
+      // remove(ref(database, 'budget/' + email + '/' + year + '/' + currentMonth + '/' + uuid))
     },
 
     addIncome: (amount, date) => {
